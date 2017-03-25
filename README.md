@@ -56,7 +56,6 @@ You can use Initialzr like this:
 
 ```javascript
 <script type="text/javascript">
-
 	// create application via initialzr
     (function(init) {
         init({
