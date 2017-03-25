@@ -200,27 +200,27 @@ Let's create a new application.
 
 ```javascript
 <script>
-    // create app "myApp"
-	(function(init) {
-        init({
-            name: "myApp"
-        });
-    })(initialzr);
-    
-    // create a helper node
-    myApp.addHelper("myHelper", function(str) {
-        console.log("helper methods [myHelper] says "+str);
-    };
-    
-    // entrypoint
-    jQuery(document).ready(function($) {
-        
-        // get helper myHelper
-        var myHelper = myApp.getHelper("myHelper");
-        
-        // call helper functionality and pass argument{string} "hello!"
-        myHelper("hello!");
+// create app "myApp"
+(function(init) {
+    init({
+        name: "myApp"
     });
+})(initialzr);
+
+// create a helper node
+myApp.addHelper("myHelper", function(str) {
+    console.log("helper methods [myHelper] says "+str);
+};
+
+// entrypoint
+jQuery(document).ready(function($) {
+    
+    // get helper myHelper
+    var myHelper = myApp.getHelper("myHelper");
+    
+    // call helper functionality and pass argument{string} "hello!"
+    myHelper("hello!");
+});
 </script>
 ```
 
