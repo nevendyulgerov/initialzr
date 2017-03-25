@@ -580,7 +580,7 @@ myApp.getHelper("anotherHey")();
 
 The above code demonstrates how to maintain flexibility in your app by including new nodes. You don't need and you cannot delete previously defined nodes.
 
-Besides adding new nodes to your app, you can also add entirely node families. This comes in handy if you prefer to use your own node families, rather than the provided defaults - helpers, modules and components. Here's how to do it:
+Besides adding new nodes to your app, you can also add entire node families. This comes in handy if you prefer to use your own node families, rather than the provided defaults - helpers, modules and components. Here's how to do it:
 
 ```javascript
 <script>
