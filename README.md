@@ -1,7 +1,7 @@
 # Initialzr
 ## JavaScript front-end application construct
 
-Initialzr is a light-weight JavaScript application construct API plugin. This plugin exposes a simple API for building efficient and sane JS front-end applications which run fast. Really fast.
+Initialzr is a light-weight JavaScript application construct plugin. This plugin exposes a simple API for building efficient and sane JS front-end applications which run fast. Really fast.
 
 Initialzr has been designed with performance in mind. The non-minified version of the plugin is 5 KB, while the minified is just 2 KB. Th whole plugin spans on about 130 lines of code.
 
@@ -166,46 +166,33 @@ Once your app is initialized, it will have access to the following methods:
 </script>
 ```
 
-In the example above, the 'success' notification will appear after 1 second, the 'info' notification will appear after 2 seconds and the 'failure' notification after 3 seconds.
+As seen above, the only way to add functionality to your app is through the node API. Node equals method. Nodes have node spaces. Here's a diagram of how the nodes look inside an initialzr app:
 
-# Callbacks
-
-You can can pass callbacks to notifier in two ways:
 
 ```javascript
 <script type="text/javascript">
-	jQuery(document).ready(function($) {
-	
-		// cache notifier
-		var $notifier = $('body').notifier;
-		
-		// initialize notifier with 'global' callbacks
-		$notifier.init({
-			show: function() {
-				console.log('This callback will be executed every time a notification is opened');
-			},
-			hide: function() {
-				console.log('This callback will be executed every time a notification is closed');
-			}
-		});
-		
-		// display notification with 'local' callbacks
-		$notifier.notify({
-			type: 'success',
-			title: 'Success',
-			subtitle: 'Hey, you made it!',
-			callbacks: {
-				show: function() {
-					console.log('This callback will be executed when this notification is opened');
-				},
-				hide: function() {
-					console.log('This callback will be executed when this notification is closed.');
-				}
-			}			
-		});
-	});
+	var app = {
+		config: {...},
+		nodes: {
+			helpers: {},
+			modules: {},
+			components: {}
+		}
+	};
 </script>
 ```
+
+An initialzr app has 3 node spaces by default - helpers, modules, components. Whether you'll use these spaces or define your own node spaces is up to you. The Node API supports creating of new route spaces through the augment() method.
+
+I personally use the default node spaces in the following way:
+
+- helpers: contain global helper methods, which need to be available to all nodes from other node spaces
+- modules: contain core functionality for managing the application
+- components: contain DOM-related functionality, which is tightly coupled with html templates
+
+Please note the sequence as it matters, especially if you are concatenating your javascripts using building tools like gulp or grunt.
+
+
 
 The global callbacks will be executed everytime a notification is shown/hidden. The local callbacks, however, will be executed only when their notification is show/hidden.
 
