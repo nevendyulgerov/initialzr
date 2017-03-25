@@ -175,7 +175,7 @@ app.getComponent("componentName");
 </script>
 ```
 
-As seen above, the only way to add functionality to your app is through the node API. Node equals method. Nodes have node familys. Here's a diagram of how the nodes look inside an initialzr app:
+As seen above, the only way to add functionality to your app is through the node API. Node equals method. Nodes have node families. Here's a diagram of how the nodes look inside an initialzr app:
 
 ```javascript
 <script>
@@ -192,11 +192,11 @@ var app = {
 </script>
 ```
 
-An initialzr app has 3 default node familys - helpers, modules, components. Whether you'll use these spaces or define your own node familys is up to you. The Node API supports creation of new node familys through the augment() method.
+An initialzr app has 3 default node families - helpers, modules, components. Whether you'll use these spaces or define your own node families is up to you. The Node API supports creation of new node families through the augment() method.
 
-I personally use the default node familys in the following way:
+I personally use the default node families in the following way:
 
-- helpers: contain global helper methods, which need to be available to all nodes from other node familys
+- helpers: contain global helper methods, which need to be available to all nodes from other node families
 - modules: contain core functionality for managing the application
 - components: contain DOM-related functionality, which is tightly coupled with html templates
 
