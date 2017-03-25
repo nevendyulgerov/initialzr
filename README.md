@@ -245,42 +245,44 @@ Let's create another application.
 
 ```javascript
 <script>
-	// create application "myApp"
-	(function(init) {
-        init({
-            name: "myApp"
-        });
-    })(initialzr);
-    
-    // create a helper node for controlling visibility
-    myApp.addHelper("toggleVisibility", function($el, callback) {
-        var style = $el[0].style;
-        style.opacity = 0;
-        style.transition = "all 0.3s";
-        
-        callback();
-    };
-    
-    // create a helper node for controlling style updates
-    myApp.addHelper("toggleStyle", function($el) {
-        var style = $el[0].style;
-        style.backgroundColor = "tomato";
-        style.color = "white";
-        style.transition = "all 0.3s";
+
+// create application "myApp"
+(function(init) {
+    init({
+        name: "myApp"
     });
+})(initialzr);
+
+// create a helper node for controlling visibility
+myApp.addHelper("toggleVisibility", function($el, callback) {
+    var style = $el[0].style;
+    style.opacity = 0;
+    style.transition = "all 0.3s";
     
-    // entrypoint
-    jQuery(document).ready(function($) {
-        var app = myApp;
-        var $target = $('.target');
-        
-        var toggleVisibility = app.getHelper("toggleVisibility");
-        var toggleStyle = app.getHelper("toggleStyle");
-        
-        toggleVisibility($target, function() {
-            toggleStyle($target);
-        });
+    callback();
+};
+
+// create a helper node for controlling style updates
+myApp.addHelper("toggleStyle", function($el) {
+    var style = $el[0].style;
+    style.backgroundColor = "tomato";
+    style.color = "white";
+    style.transition = "all 0.3s";
+});
+
+// entrypoint
+jQuery(document).ready(function($) {
+    var app = myApp;
+    var $target = $('.target');
+    
+    var toggleVisibility = app.getHelper("toggleVisibility");
+    var toggleStyle = app.getHelper("toggleStyle");
+    
+    toggleVisibility($target, function() {
+        toggleStyle($target);
     });
+});
+
 </script>
 ```
 
