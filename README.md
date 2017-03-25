@@ -1,7 +1,7 @@
 # Initialzr
 ## JavaScript front-end application construct
 
-Initialzr is a light-weight JavaScript application construct plugin. This plugin exposes a simple API for building efficient and sane JS front-end applications which run fast. Really fast.
+Initialzr is a light-weight JavaScript application construct plugin. This plugin exposes a simple API for building efficient, extensible, easy to maintain but most of all SANE JS front-end applications which run fast. Really fast.
 
 Initialzr has been designed with performance in mind. The non-minified version of the plugin is 5 KB, while the minified is just 2 KB. Th whole plugin spans on about 130 lines of code.
 
