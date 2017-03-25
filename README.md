@@ -182,7 +182,7 @@ As seen above, the only way to add functionality to your app is through the node
 </script>
 ```
 
-An initialzr app has 3 node spaces by default - helpers, modules, components. Whether you'll use these spaces or define your own node spaces is up to you. The Node API supports creating of new route spaces through the augment() method.
+An initialzr app has 3 default node spaces - helpers, modules, components. Whether you'll use these spaces or define your own node spaces is up to you. The Node API supports creating of new node spaces through the augment() method.
 
 I personally use the default node spaces in the following way:
 
@@ -190,35 +190,48 @@ I personally use the default node spaces in the following way:
 - modules: contain core functionality for managing the application
 - components: contain DOM-related functionality, which is tightly coupled with html templates
 
-Please note the sequence as it matters, especially if you are concatenating your javascripts using building tools like gulp or grunt.
+Please note the sequence as it matters, especially if you are concatenating your javascripts using build tools like gulp or grunt.
 
+Now, let's play with some of the methods, which come with the node API.
 
+Let's create a new application.
 
-The global callbacks will be executed everytime a notification is shown/hidden. The local callbacks, however, will be executed only when their notification is show/hidden.
-
-# Options
-
-You can call a notification in three ways. The traditional way is by just calling:
 
 ```javascript
 <script type="text/javascript">
-	jQuery(document).ready(function($) {
-	
-		// cache notifier
-		var $notifier = $('body').notifier;
-		
-		// initialize notifier
-		$notifier.init();
-		
-		// display notification
-		$notifier.notify({
-			type: 'success',
-			title: 'Success',
-			subtitle: 'Hey, you made it!'
-		});
-	});
+
+	// create application "myApp"
+	(function(init) {
+        init({
+            name: "myApp"
+        });
+    })(initialzr);
+    
+    // create a helper node
+    myApp.addHelper("myHelper", function(str) {
+        console.log("helper methods [myHelper] says "+str);
+    };
+    
+    // entrypoint
+    jQuery(document).ready(function($) {
+        
+        // get helper myHelper
+        var myHelper = myApp.getHelper("myHelper");
+        
+        // call helper functionality and pass argument{string} "hello!"
+        myHelper("hello!");
+    });
 </script>
 ```
+
+The above code creates a new application "myApp", then it adds to its "helpers" node space a helper method with name "myHelper" and client-provided functionality. So, basically you interact with initialzr in the following way:
+
+- save your functionality as node in initialzr
+- then your functionality becomes accessible through the plugin's API
+
+Please note that you do NOT have direct access to the app's properties, so if you try to do something funky like delete myApp.nodes or myApp.nodes = undefined, the operation will fail, returning a boolean literal. 
+
+
 
 The above code will simply initialize a notification and show it on the page right away. 
 
