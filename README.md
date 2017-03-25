@@ -30,7 +30,7 @@ To include the minified version of the plugin on your page, simply add:
 <script type="text/javascript" src="path-to-initialzr/initialzr.min.js"></script>
 ```
 
-Alternatively, you can include the plugin in an async manner, like this:
+Alternatively, if you use jQuery, you can include the plugin in an async manner, like this:
 
 ```javascript
 <script type="text/javascript">
@@ -99,7 +99,6 @@ You might be wondering, will the options data become publicly available. Will yo
 The answer is no. Initialzr creates "safe" applications, which mostly have read-only fields. These fields can be retrieved via the plugin's API in a safe way. This ensures that your app stays resilient throughout its life. It also ensures that issues, caused by script injections or other obtrusive attempts will fail. Having the peace of mind that your application is protected from uncaring hands was one of the main reasons for building Initialzr in the first place.
  
 Once your app is initialized, it will have access to the following methods:
-
 
 ```javascript
 <script>
@@ -177,7 +176,6 @@ app.getComponent("componentName");
 
 As seen above, the only way to add functionality to your app is through the node API. Node equals method. Nodes have node spaces. Here's a diagram of how the nodes look inside an initialzr app:
 
-
 ```javascript
 <script>
 
@@ -206,7 +204,6 @@ Please note the sequence as it matters, especially if you are concatenating your
 Now, let's play with some of the methods, which come with the Node API.
 
 Let's create a new application.
-
 
 ```javascript
 <script>
@@ -245,7 +242,6 @@ Please note that you do NOT have direct access to the app's properties, so if yo
 
 
 Let's create another application.
-
 
 ```javascript
 <script>
@@ -294,19 +290,20 @@ The above code will first use the helper node toggleVisibility to... toggle the 
 
 Please note that jQuery is not required for initialzr to work. I'll just use it in some of the examples, mostly for accessing DOM elements.
 
+# Building an actual app
 
-Now, let's use Initialzr for something more meaningful. Let's create a simple data retrieving app, which performs an AJAX request - GET to an endpoint and retrieves JSON data. The app then displays the results in a fancy way to the DOM - it outputs a notification with a nice transition effect. On top of this each of these notifications will be customized with a random background gradient generator method. This type of functionality can be easily achieved with initialzr. 
+Now, let's use Initialzr for something more meaningful. Let's create a simple data retrieving app, which performs an AJAX request - GET to an endpoint and retrieves JSON data. The app then displays the results in a fancy way to the DOM - it outputs a notification with a nice transition effect. On top of this each of these, notifications will be customized with a random background gradient generator method. This type of functionality can be easily achieved with initialzr. 
 
 Let's make this a bit more interesting. Let's hook to https://ghibliapi.herokuapp.com/films, from where we can retrieve fun data, like all the movies Studio Ghibli produced. They are the makers of Princess Mononoke, Spirited Away and many other great movies.
 
 First, we need to break down the app into a ground of methods - nodes. I personally identify the following nodes:
 
-- ghibliService   - controls the AJAX requests
-- displayMovies         - controls the data retrieval method
-- randomGradient        - controls the randomization of gradients
-- notifier              - controls the notification mechanism
+- ghibliService   - controls the AJAX requests to the https://ghibliapi.herokuapp.com/films
+- displayMovies   - controls the data retrieval method
+- randomGradient  - controls the randomization of gradients
+- notifier        - controls the notification mechanism
 
-Once again, we start off by creating an application
+Once again, we start off by creating an application:
 
 ```javascript
 <script>
@@ -357,10 +354,11 @@ Next, we create node "displayMovies":
 
 // add helper for displaying movies
 myApp.addHelper("displayMovies", function(args) {
-    var app      = myApp;
     var interval = args.interval;
     var movies   = args.movies;
+    var app      = myApp;
     var notifier = app.getHelper("notifier");
+    var rGradient = app.getHelper("randomGradient");
 
     var display = function(index, movies) {
         index = index || 0;
@@ -371,6 +369,7 @@ myApp.addHelper("displayMovies", function(args) {
 
         var movie = movies[index];
 
+        // delegate display of movie to node notifier
         notifier({
             type: "success",
             title: movie.title,
@@ -379,21 +378,58 @@ myApp.addHelper("displayMovies", function(args) {
             hideAfter: 10000
         });
 
-        // call helper
-        app.getHelper("randomGradient")($('.notification').last());
-
+        // delegate gradient update to node randomGradient
+        var $target = $('.notification').last();
+        rGradient($target);
+        
+        // recursive call
         setTimeout(function() {
             display(++index, movies);
         }, interval);
     };
 
+    // start recursive display
     display(0, movies);
 });
 	
 </script>
 ```
 
-This node is a bit more complicated. This node contains an inner recursive function, which
+This node is a bit more complicated. It contains an inner recursive function display. This function is called for each result. We need it to be recursive because this allows us to safely call the next result, only after the presentation of the previous has been fully executed. Also, notice that we retrieve two nodes - notifier and rGradient and delegate the presentation for each result to them.
+
+Next, comes the randomGradient node:
+
+```javascript
+<script>
+
+// add helper for random gradients
+myApp.addHelper("randomGradient", function($el) {
+    var randomGradient = function() {
+        var c1 = {
+            r: Math.floor(Math.random()*255),
+            g: Math.floor(Math.random()*255),
+            b: Math.floor(Math.random()*255)
+        };
+        var c2 = {
+            r: Math.floor(Math.random()*255),
+            g: Math.floor(Math.random()*255),
+            b: Math.floor(Math.random()*255)
+        };
+        c1.rgb = 'rgb('+c1.r+','+c1.g+','+c1.b+')';
+        c2.rgb = 'rgb('+c2.r+','+c2.g+','+c2.b+')';
+        return 'radial-gradient(at top left, '+c1.rgb+', '+c2.rgb+')';
+    };
+
+    $el.css({
+        background: randomGradient()
+    });
+});
+
+</script>
+```
+
+This node applies a randomized gradient to a provided jQuery object. Let's not focus on how it gets the random gradient for now.
+
 
 
 
