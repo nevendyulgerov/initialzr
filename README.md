@@ -200,8 +200,7 @@ Let's create a new application.
 
 ```javascript
 <script>
-
-	// create application "myApp"
+    // create app "myApp"
 	(function(init) {
         init({
             name: "myApp"
