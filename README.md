@@ -5,7 +5,10 @@ Initialzr is a light-weight JavaScript application construct plugin. This plugin
 
 Initialzr has been designed with performance in mind. The non-minified version of the plugin is 5 KB, while the minified is just 2 KB. Th whole plugin spans on about 130 lines of code.
 
-Under the hood Initialzr is an Object Oriented module, which has one task - exposing powerful methods for manipulating application data, while ensuring core functionality is protected from public use.
+Under the hood Initialzr is an Object Oriented module, which has two primary tasks:
+ 
+ - exposing powerful methods for manipulating application data
+ - ensuring core functionality is protected from public use.
 
 # Requirements
 
