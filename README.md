@@ -86,6 +86,8 @@ Notice that you pass an object to Initialzr upon initialization. This is your ap
 
 This time we initialized an application "photoGallery" with an options object, which will store app-specific data.
 
+Keep in mind that the only REQUIRED param for initializing an initialzr app is name. Obviously, you'll need a name for your app. The string you provide will become a global space, once the app is ready.
+
 You might be wondering, will the options data become publicly available. Will you be able to access or modify it from photoGallery.options for example? 
 
 The answer is no. Initialzr creates "safe" applications, which mostly have read-only fields. These fields can be retrieved via the plugin's API in a safe way.
