@@ -470,26 +470,25 @@ jQuery(document).ready(function() {
     ghibliService({
         callback: function(err, response) {
             if ( response ) {
-            
-				// 2. display movies ...
+                // 2. display movies ...
                 displayMovies({
                     interval: 1000,
                     movies: response,
-					callback: function(movie) {
-				
-						// 3. call notifier ...
-						notifier({
-							type: "success",
-							title: movie.title,
-							subtitle: "Director: "+movie.director+", <br/>Producer: "+movie.producer,
-							fade: 2000,
-							hideAfter: 10000
-						});
-
-						// 4. call gradient randomizer
-						var $target = $('.notification').last();
-						rGradient($target);
-					}
+                    callback: function(movie) {
+                
+                        // 3. call notifier ...
+                        notifier({
+                            type: "success",
+                            title: movie.title,
+                            subtitle: "Director: "+movie.director+", <br/>Producer: "+movie.producer,
+                            fade: 2000,
+                            hideAfter: 10000
+                        });
+    
+                        // 4. call gradient randomizer
+                        var $target = $('.notification').last();
+                        rGradient($target);
+                    }
                 });
             }
         }
