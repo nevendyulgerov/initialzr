@@ -55,8 +55,7 @@ Alternatively, you can include the plugin in an async manner, like this:
 You can use Initialzr like this:
 
 ```javascript
-<script type="text/javascript">
-	// create application via initialzr
+<script>
     (function(init) {
         init({
             name: "myApp"
@@ -71,8 +70,7 @@ Notice that you pass an object to Initialzr upon initialization. This is your ap
 
 
 ```javascript
-<script type="text/javascript">
-
+<script>
     (function(init) {
         init({
             name: "photoGallery",
@@ -96,8 +94,7 @@ Once your app is initialized, it will have access to the following methods:
 
 
 ```javascript
-<script type="text/javascript">
-	
+<script>
 	var app = photoGallery;
 	
 	// creates a new node (function), in the nodes space of the application
@@ -172,7 +169,7 @@ As seen above, the only way to add functionality to your app is through the node
 
 
 ```javascript
-<script type="text/javascript">
+<script>
 	var app = {
 		config: {...},
 		nodes: {
@@ -200,8 +197,7 @@ Let's create a new application.
 
 
 ```javascript
-<script type="text/javascript">
-
+<script>
 	// create application "myApp"
 	(function(init) {
         init({
