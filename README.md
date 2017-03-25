@@ -12,7 +12,7 @@ Under the hood Initialzr is an Object Oriented module, which has two primary tas
 
 # Requirements
 
-Initialzr runs on the ES5 standard, so you just need a browser. That's it, no external dependencies.
+Initialzr runs on the ES5 standard, so you just need a browser and a text editor. That's it, no external dependencies.
 
 
 # Getting Started
