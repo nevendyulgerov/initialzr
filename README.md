@@ -200,6 +200,7 @@ Let's create a new application.
 
 ```javascript
 <script>
+
 // create app "myApp"
 (function(init) {
     init({
@@ -221,6 +222,7 @@ jQuery(document).ready(function($) {
     // call helper functionality and pass argument{string} "hello!"
     myHelper("hello!");
 });
+
 </script>
 ```
 
