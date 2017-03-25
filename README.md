@@ -601,3 +601,5 @@ myApp.getNode("core", "myNode")();
 ```
 
 Your app now has a new node family "core". You can store nodes via addNode method.
+
+You can now use Initialzr to create expressive node schemas which match your app requirements. These nodes will be safely stored and references via the Node API, exposed by Initialzr. All CRUD operations are performed in a memory-efficient manner so once a node is initialized and stored, you can quickly reference it globally, from any location.
