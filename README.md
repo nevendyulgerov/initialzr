@@ -359,6 +359,7 @@ Next, we create node "displayMovies":
 myApp.addHelper("displayMovies", function(args) {
     var interval = args.interval;
     var movies   = args.movies;
+	var callback = args.callback;
     var app      = myApp;
     var notifier = app.getHelper("notifier");
     var rGradient = app.getHelper("randomGradient");
@@ -371,19 +372,9 @@ myApp.addHelper("displayMovies", function(args) {
         }
 
         var movie = movies[index];
-
-        // delegate display of movie to node notifier
-        notifier({
-            type: "success",
-            title: movie.title,
-            subtitle: "Director: "+movie.director+", <br/>Producer: "+movie.producer,
-            fade: 2000,
-            hideAfter: 10000
-        });
-
-        // delegate gradient update to node randomGradient
-        var $target = $('.notification').last();
-        rGradient($target);
+		
+		// execute client callback
+		callback(null, movie);
         
         // recursive call
         setTimeout(function() {
@@ -473,14 +464,33 @@ jQuery(document).ready(function() {
     var ghibliService = app.getHelper("ghibliService");
     var displayMovies = app.getHelper("displayMovies");
     var notifier      = app.getHelper("notifier");
+	var rGradient	  = app.getHelper("randomGradient");
 
+	// 1. call ghibli service ...
     ghibliService({
         callback: function(err, response) {
 
             if ( response ) {
+			
+				// 2. display movies ...
                 displayMovies({
                     interval: 1000,
-                    movies: response
+                    movies: response,
+					callback: function(movie) {
+				
+						// 3. call notifier ...
+						notifier({
+							type: "success",
+							title: movie.title,
+							subtitle: "Director: "+movie.director+", <br/>Producer: "+movie.producer,
+							fade: 2000,
+							hideAfter: 10000
+						});
+
+						// 4. call gradient randomizer
+						var $target = $('.notification').last();
+						rGradient($target);
+					}
                 });
             }
         }
