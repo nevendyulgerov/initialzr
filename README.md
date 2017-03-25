@@ -1,5 +1,6 @@
 # Initialzr
 ## JavaScript front-end application construct
+http://lambdabunker.com/initialzr-demo/
 
 Initialzr is a light-weight JavaScript application construct plugin. This plugin exposes a simple API for building efficient, extensible, easy to maintain but most of all SANE JS front-end applications which run fast. Really fast.
 
