@@ -1,5 +1,5 @@
 # Initialzr
-## JavaScript Front-end application construct
+## JavaScript front-end application construct
 
 Initialzr is a light-weight JavaScript application construct API plugin. This plugin exposes a simple API for building efficient and sane JS front-end applications which run fast. Really fast.
 
@@ -63,9 +63,9 @@ You can use Initialzr like this:
 </script>
 ```
 
-The above code will initialize a new global application (object), with name "myApp". This app will become available from window[myApp] or direction from myApp (without var in front to ensure that you're getting a global variable.
+The above code will initialize a new global application (object), with name "myApp". This app will become available from window[myApp] or directly from myApp (without var in front to ensure that you're getting a global variable.
 
-Notice that you pass an object to Initialzr upon initialization. This is your application's config file. It can contain any information. For example, here's another initialization for "myApp".
+Notice that you pass an object to Initialzr upon initialization. This is your application's config file. It can contain any information. For example, here's how we can initialize another app.
 
 
 ```javascript
@@ -86,39 +86,83 @@ Notice that you pass an object to Initialzr upon initialization. This is your ap
 
 This time we initialized an application "photoGallery" with an options object, which will store app-specific data.
 
-You can also define a delay for each notification like this:
+You might be wondering, will the options data become publicly available. Will you be able to access or modify it from photoGallery.options for example? 
+
+The answer is no. Initialzr creates "safe" applications, which mostly have read-only fields. These fields can be retrieved via the plugin's API in a safe way.
+ 
+Once your app is initialized, it will have access to the following methods:
+
 
 ```javascript
 <script type="text/javascript">
-	jQuery(document).ready(function($) {
 	
-		// cache notifier
-		var $notifier = $('body').notifier;
-		
-		// initialize notifier
-		$notifier.init();
-		
-		// display chained notifications with delay
-		$notifier
-			.notify({
-				type: 'success',
-				title: 'Success',
-				subtitle: 'Hey, you made it!',
-				delay: 1000
-			})
-			.notify({
-				type: 'info',
-				title: 'Info',
-				subtitle: 'This is a standard message',
-				delay: 2000
-			})
-			.notify({
-				type: 'failure',
-				title: 'Error',
-				subtitle: 'This is your typical error message', 
-				delay: 3000
-			});
-	});
+	var app = photoGallery;
+	
+	// creates a new node (function), in the nodes space of the application
+	// @param string
+	// @param string
+	// @param function
+	// @return mixed
+	app.addNode("node", "name", function);
+	
+	// calls node, from the nodes space of the application
+	// @param string
+	// @param string
+	// @return mixed
+	add.callNode("node", "name");
+	
+	// retrieves all defined node items from node space "components"
+	// @param string
+	// @return array
+	app.getNodeItems("components");
+	
+	// retrieves a node, from the node space "components"
+	// @param string
+	// @param string
+	// @return mixed
+	app.getNode("components", "name");
+	
+	// checkes if node space exists
+	// @param string
+	// @return boolean
+	app.nodeExists("components");
+	
+	// get data from the config space of the application
+	// @param string
+	// @param string
+	app.getData("data", "name");
+	
+	// augment the application by adding a new node space
+	// @param string
+	// @param string
+	app.augment("node", "name");
+	
+	// add a new helper node in the node space "helpers"
+	// @param string
+	// @param function
+	app.addHelper("helperName", function);
+	
+	// add a new component in the node space "components"
+	// @param string
+	// @param function
+	app.addComponent("componentName", function);
+	
+	// add a new module in the node space "modules"
+	// @param string
+	// @param function
+	app.addModule("moduleName", function);
+	
+	// get helper node "helperName"
+	// @param string
+	app.getHelper("helperName");
+	
+	// get module node "moduleName"
+	// @param string
+	app.getModule("moduleName");
+	
+	// get component node "componentName"
+	// @param string
+	app.getComponent("componentName");
 </script>
 ```
 
