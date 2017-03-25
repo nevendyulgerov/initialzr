@@ -116,8 +116,8 @@ myApp.addHelper("displayMovies", function(args) {
 // entrypoint
 jQuery(document).ready(function() {
     var app = myApp;
-    var studioGhibliService = app.getHelper("studioGhibliService");
-    var notifier            = app.getHelper("notifier");
+    var ghibliService = app.getHelper("ghibliService");
+    var notifier      = app.getHelper("notifier");
 
     ghibliService({
         callback: function(err, response) {

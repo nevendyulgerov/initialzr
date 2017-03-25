@@ -430,140 +430,73 @@ myApp.addHelper("randomGradient", function($el) {
 
 This node applies a randomized gradient to a provided jQuery object. Let's not focus on how it gets the random gradient for now.
 
-
-
-
-The above code will initialize a notification and show it on the page after 1 second.
-
-The third and more advanced option is to show the notification upon event trigger. This can be done, using the 'showOnEvent' parameter:
+Finally, let's create the node, controlling DOM notifications:
 
 ```javascript
-<script type="text/javascript">
-	jQuery(document).ready(function($) {
-	
-		// cache notifier
-		var $notifier = $('body').notifier;
-		
-		// initialize notifier
-		$notifier.init();
-		
-		// display notification when event 'my_app.events.save' is triggered
-		$notifier.notify({
-			type: 'success',
-			title: 'Save',
-			subtitle: 'Your data has been successfully saved',
-			showOnEvent: 'my_app.events.save'
-		});
-	});
+<script>
+
+// add helper for DOM notifications
+myApp.addHelper("notifier", function(args) {
+    var type      = args.type;
+    var title     = args.title;
+    var subtitle  = args.subtitle;
+    var fade      = args.fade;
+    var hideAfter = args.hideAfter;
+    var $wrapper  = $('.notifications');
+    var notification = '<div class="notification bg '+type+'"><span class="title">'+title+'</span><span class="subtitle">'+subtitle+'</span></div>';
+
+    $wrapper.append(notification);
+    var $target = $('.notification').last().hide().fadeIn(fade);
+
+    setTimeout(function() {
+        $target.fadeOut(fade);
+    }, hideAfter);
+});
+
 </script>
 ```
 
-The above code will initialize a notification and show it on the page, when the event 'my_app.events.save' gets triggered. This way of displaying a notification can be particularly useful if your application is event-driven.
+This node contains a simple notification mechanism - it appends a div, containing a message to the DOM. Then it fades in the notification and after a timeout, it fades it out.
 
-The last example can be further enhanced by adding a delay, like this:
+To get these four nodes hooked, we need an entrypoint:
 
 ```javascript
-<script type="text/javascript">
-	jQuery(document).ready(function($) {
-	
-		// cache notifier
-		var $notifier = $('body').notifier;
-		
-		// initialize notifier
-		$notifier.init();
-		
-		// display notification when event 'my_app.events.save' is triggered
-		$notifier.notify({
-			type: 'success',
-			title: 'Save',
-			subtitle: 'Your data has been successfully saved',
-			showOnEvent: 'my_app.events.save',
-			delay: 1000
-		});
-	});
+<script>
+
+// entrypoint
+jQuery(document).ready(function() {
+    var app = myApp;
+    
+    var ghibliService = app.getHelper("ghibliService");
+    var displayMovies = app.getHelper("displayMovies");
+    var notifier      = app.getHelper("notifier");
+
+    ghibliService({
+        callback: function(err, response) {
+
+            if ( response ) {
+                displayMovies({
+                    interval: 1000,
+                    movies: response
+                });
+            }
+        }
+    });
+});
+
 </script>
 ```
 
-As you might have guessed, the above code will initialize a notification and when the event 'my_app.events.save' gets triggered, the notification will be shown with a delay of 1 second.
+Our entrypoint is the safe jQuery "document ready" event. It is up to you how you build your entrypoint script. If you don't depend on jQuery, you can execute the above code, right after your node definitions.
 
-By default, $.notifier uses [Font Awesose icons](http://fontawesome.io/) for its icons. If your application doesn't support Font Awesome, you can pass your own icon classes to the plugin upon initialization, like this:
+So, first we call ghibliService with a callback. ghibliService calls the endpoint, gets the ghibli data and executes the callback, passing it the data. Internally, the callback delegates responsibility to displayMovies. Internally, displayMovies calls node notifier and randomGradient.
 
-```javascript
-<script type="text/javascript">
-	jQuery(document).ready(function($) {
-	
-		// cache notifier
-		var $notifier = $('body').notifier;
-		
-		// initialize notifier
-		$notifier.init({
-			icons: {
-				success: 'class-for-success',
-				info: 'class-for-info',
-				warning: 'class-for-warning',
-				failure: 'class-for-failure'
-			}
-		});
-		
-		// display notification
-		$notifier.notify({
-			type: 'success',
-			title: 'Save',
-			subtitle: 'Your data has been successfully saved'
-		});
-	});
-</script>
+That's it. Your app is ready for testing.
+
+Please note that this repository contains this application as a demo project. To start it up run a http server in the repo's directory. For example, via python, run in the root of the project:
+
+```terminal
+python -m http.server
 ```
 
-The above code will initialize $.notifier with your custom icon classes.
-
-# Examples
-
-Here's a full-featured example of a success notification:
-
-```javascript
-<script type="text/javascript">
-	jQuery(document).ready(function($) {
-	
-		// cache notifier
-		var $notifier = $('body').notifier;
-		
-		// initialize notifier
-		$notifier.init();
-		
-		// display notification
-		$notifier.notify({
-			type: 'success',
-			title: 'Success',
-			subtitle: 'Subtitle for the success message...',
-			showOnEvent: 'notifier.notify',
-			delay: 1000,
-			callbacks: {
-				show: function() {
-					$notifier.notify({
-						type: 'info',
-						title: 'Show',
-						subtitle: 'Notification for the Show callback',
-						delay: 1000
-					});
-				},
-				hide: function() {
-					$notifier.notify({
-						type: 'warning',
-						title: 'Hide',
-						subtitle: 'Notification for the Hide callback',
-						delay: 1000
-					});
-				}
-			}
-		});
-
-
-		// you can trigger the 'success' notification anytime with:
-		// $(document).trigger('notifier.notify');
-	});
-</script>
-```
-
-The 'success' notification above will be executed when the event 'notifier.notify' is triggered. The execution will be delayed with 1 second. On the show event of the notification a new 'info' notification will appear with a delay of 1 second. On the hide event of the notification a new 'warning' notification will appear, again with a delay of 1 second.
-
+You can then view the app on localhost:8000

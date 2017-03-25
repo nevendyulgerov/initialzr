@@ -1,6 +1,6 @@
 
 // Plugin: Initialzr
-// Provides core application functionality
+// Creates applications
 
 (function() {
     initialzr = function(config) {
