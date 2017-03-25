@@ -17,7 +17,7 @@
 
 
 // add helper for ajax operations
-myApp.addHelper("studioGhibliService", function(args) {
+myApp.addHelper("ghibliService", function(args) {
     var callback = args.callback;
 
     $.ajax({
@@ -119,7 +119,7 @@ jQuery(document).ready(function() {
     var studioGhibliService = app.getHelper("studioGhibliService");
     var notifier            = app.getHelper("notifier");
 
-    studioGhibliService({
+    ghibliService({
         callback: function(err, response) {
 
             if ( response ) {
