@@ -106,31 +106,31 @@ Once your app is initialized, it will have access to the following methods:
 
 var app = photoGallery;
 
-// creates a new node (function), in the nodes space of the application
+// creates a new node (function), in the node families of the application
 // @param string
 // @param string
 // @param function
 // @return mixed
 app.addNode("node", "name", function);
 
-// calls node, from the nodes space of the application
+// calls node, from the node families of the application
 // @param string
 // @param string
 // @return mixed
 add.callNode("node", "name");
 
-// retrieves the names of all defined node items from node space "components"
+// retrieves the names of all defined node items from node family "components"
 // @param string
 // @return array
 app.getNodeItems("components");
 
-// retrieves a node, from the node space "components"
+// retrieves a node, from the node family "components"
 // @param string
 // @param string
 // @return mixed
 app.getNode("components", "name");
 
-// checkes if given node space exists
+// checkes if given node family exists
 // @param string
 // @return boolean
 app.nodeExists("components");
@@ -140,22 +140,22 @@ app.nodeExists("components");
 // @param string
 app.getData("data", "name");
 
-// augment the application by adding a new node space
+// augment the application by adding a new node family
 // @param string
 // @param string
 app.augment("node", "name");
 
-// add a new helper node in the node space "helpers"
+// add a new helper node in the node family "helpers"
 // @param string
 // @param function
 app.addHelper("helperName", function);
 
-// add a new component node in the node space "components"
+// add a new component node in the node family "components"
 // @param string
 // @param function
 app.addComponent("componentName", function);
 
-// add a new module node in the node space "modules"
+// add a new module node in the node family "modules"
 // @param string
 // @param function
 app.addModule("moduleName", function);
@@ -175,7 +175,7 @@ app.getComponent("componentName");
 </script>
 ```
 
-As seen above, the only way to add functionality to your app is through the node API. Node equals method. Nodes have node spaces. Here's a diagram of how the nodes look inside an initialzr app:
+As seen above, the only way to add functionality to your app is through the node API. Node equals method. Nodes have node familys. Here's a diagram of how the nodes look inside an initialzr app:
 
 ```javascript
 <script>
@@ -192,11 +192,11 @@ var app = {
 </script>
 ```
 
-An initialzr app has 3 default node spaces - helpers, modules, components. Whether you'll use these spaces or define your own node spaces is up to you. The Node API supports creation of new node spaces through the augment() method.
+An initialzr app has 3 default node familys - helpers, modules, components. Whether you'll use these spaces or define your own node familys is up to you. The Node API supports creation of new node familys through the augment() method.
 
-I personally use the default node spaces in the following way:
+I personally use the default node familys in the following way:
 
-- helpers: contain global helper methods, which need to be available to all nodes from other node spaces
+- helpers: contain global helper methods, which need to be available to all nodes from other node familys
 - modules: contain core functionality for managing the application
 - components: contain DOM-related functionality, which is tightly coupled with html templates
 
@@ -234,7 +234,7 @@ jQuery(document).ready(function($) {
 </script>
 ```
 
-The above code creates a new application "myApp", then it adds to its "helpers" node space a helper method with name "myHelper" and client-provided functionality. So, basically you interact with initialzr in the following way:
+The above code creates a new application "myApp", then it adds to its "helpers" node family a helper method with name "myHelper" and client-provided functionality. So, basically you interact with initialzr in the following way:
 
 - save your functionality as node in initialzr
 - call your functionality through the plugin's API
@@ -503,3 +503,41 @@ python -m http.server
 ```
 
 You can then view the app on localhost:8000
+
+# Conventions
+
+To stay light-weight, Initialzr follows few strict conventions:
+
+- Every public method, which returns value, either returns the expected value or returns false. That's it. There's no extensive validation. If you provide the right arguments, you'll get the expected values. If something goes wrong - you attempt to overwrite an existing node or retrieve a non existing node, you'll simply get false. You can intercept this behavior of initialzr and use it to validate more thoroughly what comes out of the app. Here's how:
+
+```javascript
+<script>
+
+// create an app
+(function(init) {
+    init({
+        name: "myApp"
+    });
+})(initialzr);
+
+// add a helper node
+myApp.addHelper("sayHi", function(str) {
+    console.log("Hey there, "+str); 
+});
+
+// retrieve a non existing helper
+var myHelper = myApp.getHelper("myHekdkasdERROR");
+
+if ( ! myHelper ) {
+    // intercept and handle the error
+} else {
+    // call the helper
+    myHelper("stranger");
+}
+
+</script>
+```
+
+So, if you attempt to retrieve a non-existing node, you'll get false. If you attempt to overwrite an existing node, you'll get false. If you try to retrieve the list of nodes for a non existing node family, you'll get false.
+
+Another thing to note. Initialzr does NOT like when you mess with define nodes. Once you add a node, you can only read and execute it. You cannot overwrite it, nor delete it.  

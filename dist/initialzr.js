@@ -21,29 +21,29 @@
         var init = function(config) {
             app.config = config;
 
-            var addNode = function(node, name, func) {
+            var addNode = function(nodeFamily, nodeName, func) {
                 var nodes = app.nodes;
 
-                if ( nodes.hasOwnProperty(node) && ! nodes[node].hasOwnProperty(name) && typeof func === "function" ) {
-                    nodes[node][name] = func;
+                if ( nodes.hasOwnProperty(nodeFamily) && ! nodes[nodeFamily].hasOwnProperty(nodeName) && typeof func === "function" ) {
+                    nodes[nodeFamily][nodeName] = func;
                 } else {
                     return false;
                 }
             };
 
-            var augment = function(node) {
+            var augment = function(nodeFamily) {
                 var nodes = app.nodes;
 
-                if ( ! nodes.hasOwnProperty(node) ) {
-                    nodes[node] = {}
+                if ( ! nodes.hasOwnProperty(nodeFamily) ) {
+                    nodes[nodeFamily] = {}
                 } else {
                     return false;
                 }
             };
 
-            var callNode = function(prop, name, params) {
+            var callNode = function(nodeFamily, nodeName, params) {
                 var nodeParams = typeof params !== "undefined" ? params : {};
-                var node = getNode(prop, name);
+                var node = getNode(nodeFamily, nodeName);
 
                 if ( node ) {
                     node(nodeParams);
@@ -52,21 +52,21 @@
                 }
             };
 
-            var getNode = function(node, name) {
+            var getNode = function(nodeFamily, nodeName) {
                 var nodes = app.nodes;
-                if ( nodes.hasOwnProperty(node) && nodes[node].hasOwnProperty(name) && typeof nodes[node][name] === "function" ) {
-                    return nodes[node][name];
+                if ( nodes.hasOwnProperty(nodeFamily) && nodes[nodeFamily].hasOwnProperty(nodeName) && typeof nodes[nodeFamily][nodeName] === "function" ) {
+                    return nodes[nodeFamily][nodeName];
                 } else {
                     return false;
                 }
             };
 
-            var getNodeItems = function(node) {
+            var getNodeItems = function(nodeFamily) {
                 var nodes = app.nodes;
                 var items = [];
 
-                if ( nodes.hasOwnProperty(node) ) {
-                    for ( var i in nodes[node] ) {
+                if ( nodes.hasOwnProperty(nodeFamily) ) {
+                    for ( var i in nodes[nodeFamily] ) {
                         items.push(i);
                     }
                     return items;
@@ -75,8 +75,8 @@
                 }
             };
 
-            var nodeExists = function(node, name) {
-                return typeof getNode(node, name) === "function";
+            var nodeExists = function(nodeFamily, nodeName) {
+                return typeof getNode(nodeFamily, nodeName) === "function";
             };
 
             var getData = function(prop, name) {
@@ -89,38 +89,38 @@
                 }
             };
 
-            var addHelper = function(name, func) {
-                addNode("helpers", name, func);
+            var addHelper = function(nodeName, func) {
+                addNode("helpers", nodeName, func);
             };
 
-            var addComponent = function(name, func) {
-                addNode("components", name, func);
+            var addComponent = function(nodeName, func) {
+                addNode("components", nodeName, func);
             };
 
-            var addModule = function(name, func) {
-                addNode("modules", name, func);
+            var addModule = function(nodeName, func) {
+                addNode("modules", nodeName, func);
             };
 
-            var getHelper = function(name) {
-                return getNode("helpers", name);
+            var getHelper = function(nodeName) {
+                return getNode("helpers", nodeName);
             };
 
-            var getComponent = function(name) {
-                return getNode("components", name);
+            var getComponent = function(nodeName) {
+                return getNode("components", nodeName);
             };
 
-            var getModule = function(name) {
-                return getNode("modules", name);
+            var getModule = function(nodeName) {
+                return getNode("modules", nodeName);
             };
 
             var setGlobal = (function() {
                 window[app.config.name] = (function() {
                     return {
                         addHelper: addHelper,
-                        addComponent: addComponent,
-                        addModule: addModule,
                         getHelper: getHelper,
+                        addComponent: addComponent,
                         getComponent: getComponent,
+                        addModule: addModule,
                         getModule: getModule,
                         addNode: addNode,
                         callNode: callNode,
