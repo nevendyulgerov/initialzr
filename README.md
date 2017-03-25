@@ -469,9 +469,8 @@ jQuery(document).ready(function() {
 	// 1. call ghibli service ...
     ghibliService({
         callback: function(err, response) {
-
             if ( response ) {
-			
+            
 				// 2. display movies ...
                 displayMovies({
                     interval: 1000,
