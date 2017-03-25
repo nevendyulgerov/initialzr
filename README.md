@@ -554,7 +554,7 @@ Another thing to note. Initialzr does NOT like when you mess with defined nodes.
 <script>
 
 // shorthand initialzr app
-(function(i){i({name:"myApp"})(initialzr);
+(function(i){i({name:"myApp"})})(initialzr);
 
 // define a helper node
 myApp.addHelper("hey", function(str) {
