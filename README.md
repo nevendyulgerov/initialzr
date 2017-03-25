@@ -111,24 +111,24 @@ var app = photoGallery;
 // @param string
 // @param function
 // @return mixed
-app.addNode("node", "name", function);
+app.addNode("nodeFamily", "nodeName", function);
 
 // calls node, from the node families of the application
 // @param string
 // @param string
 // @return mixed
-add.callNode("node", "name");
+add.callNode("nodeFamily", "nodeName");
 
 // retrieves the names of all defined node items from node family "components"
 // @param string
 // @return array
-app.getNodeItems("components");
+app.getNodeItems("nodeFamily");
 
 // retrieves a node, from the node family "components"
 // @param string
 // @param string
 // @return mixed
-app.getNode("components", "name");
+app.getNode("nodeFamily", "nodeName");
 
 // checkes if given node family exists
 // @param string
