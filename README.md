@@ -227,7 +227,7 @@ Let's create a new application.
 The above code creates a new application "myApp", then it adds to its "helpers" node space a helper method with name "myHelper" and client-provided functionality. So, basically you interact with initialzr in the following way:
 
 - save your functionality as node in initialzr
-- then your functionality becomes accessible through the plugin's API
+- call your functionality through the plugin's API
 
 Please note that you do NOT have direct access to the app's properties, so if you try to do something funky like delete myApp.nodes or myApp.nodes = undefined, the operation will fail, returning a boolean literal. 
 
