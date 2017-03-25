@@ -548,4 +548,56 @@ if ( ! myHelper ) {
 
 So, if you attempt to retrieve a non-existing node, you'll get false. If you attempt to overwrite an existing node, you'll get false. If you try to retrieve the list of nodes for a non existing node family, you'll get false.
 
-Another thing to note. Initialzr does NOT like when you mess with define nodes. Once you add a node, you can only read and execute it. You cannot overwrite it, nor delete it.  
+Another thing to note. Initialzr does NOT like when you mess with defined nodes. Once you add a node, you can only read and execute it. You cannot overwrite it, nor delete it. Client coders must decide on their node schema early and never try to overwrite it. Rather than trying to overwrite an already defined node, just add a new one and call the new instead of the old. Here's how:
+
+```javascript
+<script>
+
+// shorthand initialzr app
+(function(i){i({name:"myApp"})(initialzr);
+
+// define a helper node
+myApp.addHelper("hey", function(str) {
+    console.log("Hey, "+str);
+});
+
+// you decide that you no longer like helper "hey"
+// sorry, but you cannot retrieve it
+// Initialzr protects its nodes
+
+// well, ok then, I'll create a new node
+myApp.addHelper("anotherHey", function(str) {
+    console.log("How is it going, "+str+"?");
+});
+
+// call my new helper node
+myApp.getHelper("anotherHey")();
+
+// that was easy
+
+</script>
+```
+
+The above code demonstrates how to maintain flexibility in your app by including new nodes. You don't need and you cannot delete previously defined nodes.
+
+Besides adding new nodes to your app, you can also add entirely node families. This comes in handy if you prefer to use your own node families, rather than the provided defaults - helpers, modules and components. Here's how to do it:
+
+```javascript
+<script>
+
+// shorthand initialzr app
+(function(i){i({name:"myApp"})})(initialzr);
+
+// create a new node family
+myApp.augment("core");
+
+// add node to node family "core"
+myApp.addNode("core", "myNode", function(str) { console.log("my node receives "+str); });
+
+// call node "core" and execute it directly
+myApp.getNode("core", "myNode")();
+
+</script>
+```
+
+Your app now has a new node family "core". You can store nodes via addNode method.
