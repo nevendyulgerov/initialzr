@@ -562,7 +562,7 @@ myApp.addHelper("hey", function(str) {
 });
 
 // you decide that you no longer like helper "hey"
-// sorry, but you cannot retrieve it
+// sorry, but you cannot delete it
 // Initialzr protects its nodes
 
 // well, ok then, I'll create a new node
