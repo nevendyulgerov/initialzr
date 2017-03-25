@@ -90,7 +90,7 @@ Keep in mind that the only REQUIRED param for initializing an initialzr app is n
 
 You might be wondering, will the options data become publicly available. Will you be able to access or modify it from photoGallery.options for example? 
 
-The answer is no. Initialzr creates "safe" applications, which mostly have read-only fields. These fields can be retrieved via the plugin's API in a safe way.
+The answer is no. Initialzr creates "safe" applications, which mostly have read-only fields. These fields can be retrieved via the plugin's API in a safe way. This ensures that your app stays resilient throughout its life. It also ensures that issues, caused by script injections or other obtrusive attempts will fail. Having the peace of mind that your application is protected from uncaring hands was one of the main reasons for building Initialzr in the first place.
  
 Once your app is initialized, it will have access to the following methods:
 
@@ -112,7 +112,7 @@ Once your app is initialized, it will have access to the following methods:
 	// @return mixed
 	add.callNode("node", "name");
 	
-	// retrieves all defined node items from node space "components"
+	// retrieves the names of all defined node items from node space "components"
 	// @param string
 	// @return array
 	app.getNodeItems("components");
@@ -123,7 +123,7 @@ Once your app is initialized, it will have access to the following methods:
 	// @return mixed
 	app.getNode("components", "name");
 	
-	// checkes if node space exists
+	// checkes if given node space exists
 	// @param string
 	// @return boolean
 	app.nodeExists("components");
@@ -143,25 +143,25 @@ Once your app is initialized, it will have access to the following methods:
 	// @param function
 	app.addHelper("helperName", function);
 	
-	// add a new component in the node space "components"
+	// add a new component node in the node space "components"
 	// @param string
 	// @param function
 	app.addComponent("componentName", function);
 	
-	// add a new module in the node space "modules"
+	// add a new module node in the node space "modules"
 	// @param string
 	// @param function
 	app.addModule("moduleName", function);
 	
-	// get helper node "helperName"
+	// get helper node
 	// @param string
 	app.getHelper("helperName");
 	
-	// get module node "moduleName"
+	// get module node
 	// @param string
 	app.getModule("moduleName");
 	
-	// get component node "componentName"
+	// get component node
 	// @param string
 	app.getComponent("componentName");
 </script>
@@ -183,7 +183,7 @@ As seen above, the only way to add functionality to your app is through the node
 </script>
 ```
 
-An initialzr app has 3 default node spaces - helpers, modules, components. Whether you'll use these spaces or define your own node spaces is up to you. The Node API supports creating of new node spaces through the augment() method.
+An initialzr app has 3 default node spaces - helpers, modules, components. Whether you'll use these spaces or define your own node spaces is up to you. The Node API supports creation of new node spaces through the augment() method.
 
 I personally use the default node spaces in the following way:
 
@@ -193,7 +193,7 @@ I personally use the default node spaces in the following way:
 
 Please note the sequence as it matters, especially if you are concatenating your javascripts using build tools like gulp or grunt.
 
-Now, let's play with some of the methods, which come with the node API.
+Now, let's play with some of the methods, which come with the Node API.
 
 Let's create a new application.
 
@@ -231,6 +231,56 @@ The above code creates a new application "myApp", then it adds to its "helpers" 
 
 Please note that you do NOT have direct access to the app's properties, so if you try to do something funky like delete myApp.nodes or myApp.nodes = undefined, the operation will fail, returning a boolean literal. 
 
+
+Let's create another application.
+
+
+```javascript
+<script>
+	// create application "myApp"
+	(function(init) {
+        init({
+            name: "myApp"
+        });
+    })(initialzr);
+    
+    // create a helper node for controlling visibility
+    myApp.addHelper("toggleVisibility", function($el, callback) {
+        var style = $el[0].style;
+        style.opacity = 0;
+        style.transition = "all 0.3s";
+        
+        callback();
+    };
+    
+    // create a helper node for controlling style updates
+    myApp.addHelper("toggleStyle", function($el) {
+        var style = $el[0].style;
+        style.backgroundColor = "tomato";
+        style.color = "white";
+        style.transition = "all 0.3s";
+    });
+    
+    // entrypoint
+    jQuery(document).ready(function($) {
+        var app = myApp;
+        var $target = $('.target');
+        
+        var toggleVisibility = app.getHelper("toggleVisibility");
+        var toggleStyle = app.getHelper("toggleStyle");
+        
+        toggleVisibility($target, function() {
+            toggleStyle($target);
+        });
+    });
+</script>
+```
+
+This time we initialized an application with two helpers, which interact with each other neatly through a callback. There's nothing groundbreaking here, but hopefully you start to see how initialzr can eliminate the issue with organizing and managing your front-end functionality. 
+
+The above code will first use the helper node toggleVisibility to... toggle the visibility of a given jQuery object and then in its callback the other helper - toggleStyle - will perform style modification on the element. 
+
+Please note that jQuery is not required for initialzr to work. I'll just use it in some of the examples, mostly for accesing DOM elements.
 
 
 The above code will simply initialize a notification and show it on the page right away. 
