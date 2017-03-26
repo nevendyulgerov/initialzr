@@ -548,7 +548,7 @@ if ( ! myHelper ) {
 
 So, if you attempt to retrieve a non-existing node, you'll get false. If you attempt to overwrite an existing node, you'll get false. If you try to retrieve the list of nodes for a non existing node family, you'll get false.
 
-Another thing to note. Initialzr does NOT like when you mess with defined nodes. Once you add a node, you can only read and execute it. You cannot overwrite it, nor delete it. Client coders must decide on their node schema early and never try to overwrite it. Rather than trying to overwrite an already defined node, just add a new one and call the new instead of the old. Here's how:
+- Another thing to note. Initialzr does NOT like when you mess with defined nodes. Once you add a node, you can only read and execute it. You cannot overwrite it, nor delete it. Client coders must decide on their node schema early and never try to overwrite it. Rather than trying to overwrite an already defined node, just add a new one and call the new instead of the old. Here's how:
 
 ```javascript
 <script>

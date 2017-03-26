@@ -18,9 +18,7 @@
             }
         };
 
-        var init = function(config) {
-            app.config = config;
-
+        var init = function() {
             var addNode = function(nodeFamily, nodeName, func) {
                 var nodes = app.nodes;
 
@@ -134,6 +132,6 @@
             })();
         };
 
-        init(config);
+        init();
     };
 })();
