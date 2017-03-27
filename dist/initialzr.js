@@ -17,6 +17,16 @@
         var isGlobal = typeof config.isGlobal === "boolean" ? config.isGlobal : true;
 
         var init = function() {
+            var augment = function(nodeFamily) {
+                var nodes = app.nodes;
+
+                if ( ! nodes.hasOwnProperty(nodeFamily) ) {
+                    nodes[nodeFamily] = {};
+                } else {
+                    return false;
+                }
+            };
+
             var addNode = function(nodeFamily, nodeName, func) {
                 var nodes = app.nodes;
 
@@ -27,11 +37,10 @@
                 }
             };
 
-            var augment = function(nodeFamily) {
+            var getNode = function(nodeFamily, nodeName) {
                 var nodes = app.nodes;
-
-                if ( ! nodes.hasOwnProperty(nodeFamily) ) {
-                    nodes[nodeFamily] = {}
+                if ( nodes.hasOwnProperty(nodeFamily) && nodes[nodeFamily].hasOwnProperty(nodeName) && typeof nodes[nodeFamily][nodeName] === "function" ) {
+                    return nodes[nodeFamily][nodeName];
                 } else {
                     return false;
                 }
@@ -43,15 +52,6 @@
 
                 if ( node ) {
                     node(nodeParams);
-                } else {
-                    return false;
-                }
-            };
-
-            var getNode = function(nodeFamily, nodeName) {
-                var nodes = app.nodes;
-                if ( nodes.hasOwnProperty(nodeFamily) && nodes[nodeFamily].hasOwnProperty(nodeName) && typeof nodes[nodeFamily][nodeName] === "function" ) {
-                    return nodes[nodeFamily][nodeName];
                 } else {
                     return false;
                 }
@@ -83,13 +83,13 @@
 
             var createInstance = function() {
                 return {
+                    augment: augment,
                     addNode: addNode,
-                    callNode: callNode,
                     getNode: getNode,
+                    callNode: callNode,
                     nodeExists: nodeExists,
                     getNodes: getNodes,
-                    getConfig: getConfig,
-                    augment: augment
+                    getConfig: getConfig
                 };
             };
 
