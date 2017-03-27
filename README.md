@@ -780,3 +780,43 @@ myApp.callNode("core", "loadDependencies", {
 Your app now has a new node family "core". This node family is concerned with the bootstrapping of your app. It contains a node "loadDependencies" which internally loads all your dependencies in an async manner. This node also communicates with other nodes through a callback.
 
 You can now use Initialzr to create expressive node schemas which match your app requirements. These nodes will be safely stored and references via the Node API, exposed by Initialzr. All create and read operations are performed in a memory-efficient manner so once a node is initialized and stored, you can quickly reference it globally or locally, from any location.
+
+# Scoping
+
+Initialzr has one more really cool ability. You can use it as your app wrapper on global and local scale. What does this mean really?
+
+```javascript
+<script>
+
+// create an app
+(function(i){i({name:"myApp"})})(initialzr);
+
+// create a node family
+myApp.augment("helpers");
+
+// create node
+myApp.addNode("helpers", "myHelper", function() {
+
+    // create a local app via initialzr
+    var innerApp = initialzr({name:"innerApp", isGlobal:false});
+
+    // augment local app
+    innerApp.augment("monitors");
+
+    // add node to local app
+    innerApp.addNode("monitors", "monitorTrigger", function($trigger) {
+        $trigger.on("click", function(e) {
+            // capture click ...
+        });
+    });
+});
+
+// call node
+myApp.callNode("helpers", "myHelper");
+
+</script>
+```
+
+The code above demonstrates that Initialzr works exactly the same way on local level. First we create a global app "myApp" then we augment and add a node to it. In the nodes definition we create a local app. This app will be accessible only from within the node "myHelper". The local "innerApp" has access to the same API.
+
+To initialize a local Initialzr app, simply pass the param isGlobal: false at initialization. Also, notice the way we initialize a local app. The syntax is a bit different. When we initialize a local app, we do not need a self-executing function like with global apps.
