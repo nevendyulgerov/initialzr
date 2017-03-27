@@ -148,7 +148,7 @@ app.augment(nodeFamily);
 </script>
 ```
 
-As seen above, the only way to add functionality to your app is through the node API. Node equals method. Nodes have node families. Here's a diagram of how the nodes look inside an initialzr app:
+As seen above, the only way to add functionality to your app is through the node API. Node equals method. Nodes have node families. Here's a diagram of how an initialzr app looks on the inside:
 
 ```javascript
 <script>
