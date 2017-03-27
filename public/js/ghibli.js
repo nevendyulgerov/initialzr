@@ -1,11 +1,10 @@
 
-// Ghibli Studio Movies
+// App: Ghibli
 // ------------------------------
-//  entrypoint
-//    studioGhibliService
-//      displayMovies
-//        randomGradient
-//          notifier
+// ghibliService
+//   iterateMovies
+//     notifier
+//     randomGradient
 
 
 // create application via initialzr
@@ -15,27 +14,66 @@
     });
 })(initialzr);
 
+// create node family "ghibli"
+myApp.augment("ghibli");
 
-// add helper for ajax operations
-myApp.addHelper("ghibliService", function(args) {
+
+// Node: ghibliService
+// retrieves data from an endpoint via AJAX
+myApp.addNode("ghibli", "ghibliService", function(args) {
     var callback = args.callback;
 
     $.ajax({
         type: "GET",
-        data: {},
         url: "https://ghibliapi.herokuapp.com/films",
         success: function(response) {
+
+            // execute client callback
             callback(null, response);
         },
         error: function(error) {
+
+            // execute client callback
             callback(error);
         }
     })
 });
 
 
-// add helper for DOM notifications
-myApp.addHelper("notifier", function(args) {
+// Node: iterateMovies
+// iterate movies, provided as a param
+myApp.addNode("ghibli", "iterateMovies", function(args) {
+    var interval = args.interval;
+    var movies   = args.movies;
+    var callback = args.callback;
+
+    var display = function(index, movies) {
+        index = index || 0;
+
+        if ( index >= movies.length ) {
+            return true;
+        }
+
+        // get current movie
+        var movie = movies[index];
+
+        // call client callback
+        callback(movie);
+
+        setTimeout(function() {
+
+            // recursive call
+            display(++index, movies);
+        }, interval);
+    };
+
+    display(0, movies);
+});
+
+
+// Node: notifier
+// outputs data to the DOM
+myApp.addNode("ghibli", "notifier", function(args) {
     var type      = args.type;
     var title     = args.title;
     var subtitle  = args.subtitle;
@@ -53,8 +91,9 @@ myApp.addHelper("notifier", function(args) {
 });
 
 
-// add helper for random gradients
-myApp.addHelper("randomGradient", function($el) {
+// Node: randomGradient
+// applies random gradient to the background of a jQuery element
+myApp.addNode("ghibli", "randomGradient", function($el) {
     var randomGradient = function() {
         var c1 = {
             r: Math.floor(Math.random()*255),
@@ -77,55 +116,42 @@ myApp.addHelper("randomGradient", function($el) {
 });
 
 
-// add helper for displaying movies
-myApp.addHelper("displayMovies", function(args) {
-    var app      = myApp;
-    var interval = args.interval;
-    var movies   = args.movies;
-    var notifier = app.getHelper("notifier");
-
-    var display = function(index, movies) {
-        index = index || 0;
-
-        if ( index >= movies.length ) {
-            return true;
-        }
-
-        var movie = movies[index];
-
-        notifier({
-            type: "success",
-            title: movie.title,
-            subtitle: "Director: "+movie.director+", <br/>Producer: "+movie.producer,
-            fade: 2000,
-            hideAfter: 10000
-        });
-
-        // call helper
-        app.getHelper("randomGradient")($('.notification').last());
-
-        setTimeout(function() {
-            display(++index, movies);
-        }, interval);
-    };
-
-    display(0, movies);
-});
-
-
 // entrypoint
 jQuery(document).ready(function() {
     var app = myApp;
-    var ghibliService = app.getHelper("ghibliService");
-    var notifier      = app.getHelper("notifier");
+    var ghibliService = app.getNode("ghibli", "ghibliService");
+    var iterateMovies = app.getNode("ghibli", "iterateMovies");
+    var notifier      = app.getNode("ghibli", "notifier");
+    var rGradient     = app.getNode("ghibli", "randomGradient");
 
+    // 1. hook to ghibli service ...
     ghibliService({
         callback: function(err, response) {
 
+            // ... if we got a response
             if ( response ) {
-                app.getHelper("displayMovies")({
+
+                // 2. iterate movies ...
+                iterateMovies({
                     interval: 1000,
-                    movies: response
+                    movies: response,
+                    callback: function(movie) {
+
+                        // 3. notify for movie ...
+                        notifier({
+                            type: "success",
+                            title: movie.title,
+                            subtitle: "Release date: "+movie.release_date+"<br/>Director: "+movie.director+", <br/>Producer: "+movie.producer,
+                            fade: 2000,
+                            hideAfter: 10000
+                        });
+
+                        // get newly added notification
+                        var $targetNotification = $('.notification').last();
+
+                        // 4. apply random gradient on target
+                        rGradient($targetNotification);
+                    }
                 });
             }
         }
