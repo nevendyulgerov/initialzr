@@ -733,7 +733,6 @@ Node families are the heart of Initialzr. They provide separation of concept, wh
 
 ```javascript
 <script>
-
 // shorthand initialzr app
 (function(i){i({name:"myApp"})})(initialzr);
 
@@ -773,7 +772,6 @@ myApp.callNode("core", "loadDependencies", {
         console.log("all dependencies loaded");
     }
 });
-
 </script>
 ```
 
