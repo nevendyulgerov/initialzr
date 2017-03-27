@@ -5,11 +5,14 @@
 //   handleInput
 //     addMarker
 
+
 // create application
 (function(i){ i({name:"locations"}); })(initialzr);
 
+
 // add node family "map"
 locations.augment("map");
+
 
 // Node: mapCreator
 // creates map
@@ -26,6 +29,7 @@ locations.addNode("map", "createMap", function(args) {
     return map;
 });
 
+
 // Node: addMarker
 // adds marker to a map
 locations.addNode("map", "addMarker", function(args) {
@@ -37,6 +41,7 @@ locations.addNode("map", "addMarker", function(args) {
     marker.setMap(args.map);
     return marker;
 });
+
 
 // Node: handleInput
 // handlers user input
@@ -59,6 +64,27 @@ locations.addNode("map", "handleInput", function(args) {
     });
 });
 
+
+// Node: fullscreenMap
+// Ensures the map takes the screen dimensions
+locations.addNode("map", "fullscreenMap", function(args) {
+    var $window = $(window);
+    var mapStyle = args.$map[0].style;
+
+    var resize = function() {
+        mapStyle.width = $window.width()+"px";
+        mapStyle.height = $window.height()+"px";
+        google.maps.event.trigger(args.map, "resize");
+    };
+
+    resize();
+
+    $(window).resize(function() {
+        resize();
+    });
+});
+
+
 // entrypoint
 jQuery(document).ready(function($) {
 
@@ -79,6 +105,12 @@ jQuery(document).ready(function($) {
         zoom: 3
     });
 
+    // 2. enable fullscreen for the map
+    locations.callNode("map", "fullscreenMap", {
+        $map: $mapBox,
+        map: map
+    });
+
     // 2. intercept input
     locations.callNode("map", "handleInput", {
         $submit: $mapBox.find('.trigger.submit'),
@@ -87,7 +119,7 @@ jQuery(document).ready(function($) {
         callback: function(data) {
 
             // 3. add marker to map
-            locations.getNode("map", "addMarker")({
+            locations.callNode("map", "addMarker", {
                 map: map,
                 lat: data.lat,
                 lng: data.lng
