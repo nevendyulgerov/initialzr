@@ -8,8 +8,8 @@ Initialzr has been designed with performance in mind. The non-minified version o
 
 Under the hood Initialzr is an Object Oriented module, which has two primary tasks:
  
- - exposing powerful methods for manipulating application data
- - ensuring core functionality is protected from public use.
+ - Exposing powerful methods for managing modules
+ - Ensuring core functionality is protected from public misuse
 
 # Requirements
 
