@@ -757,7 +757,7 @@ myApp.addNode("core", "loadDependencies", function(args) {
 
     // get dependency
     $.getScript(dependency, function() {
-        myApp.callNode("core", "loadDependencies, {
+        myApp.callNode("core", "loadDependencies", {
             index: ++index,
             dependencies: dependencies
         });
