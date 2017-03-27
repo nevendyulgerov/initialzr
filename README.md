@@ -732,7 +732,9 @@ The above code demonstrates how to maintain flexibility in your app by including
 Node families are the heart of Initialzr. They provide separation of concept, when organizing your app's functionality. Through node families you can organize your application in a meaningful, logical way.
 
 ```javascript
+
 <script>
+
 // shorthand initialzr app
 (function(i){i({name:"myApp"})})(initialzr);
 
@@ -772,6 +774,7 @@ myApp.callNode("core", "loadDependencies", {
         console.log("all dependencies loaded");
     }
 });
+
 </script>
 ```
 
