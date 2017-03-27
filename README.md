@@ -657,7 +657,7 @@ You can then view the app on localhost:8000\locations.html
 
 To stay light-weight, Initialzr follows few strict conventions:
 
-- Every public method, which returns value, either returns the expected value or returns false. That's it. There's no extensive validation. If you provide the right arguments, you'll get the expected values. If something goes wrong - you attempt to overwrite an existing node or retrieve a non existing node, you'll simply get false. You can intercept this behavior of initialzr and use it to validate more thoroughly what comes out of the app. Here's how:
+- Every public method, either performs its action and returns the expected value or returns false. That's it. There's no extensive validation. If you provide the right arguments, you'll get the expected values. If something goes wrong - you attempt to overwrite an existing node or retrieve a non existing node, you'll simply get false. You can intercept this behavior of initialzr and use it to validate more thoroughly what comes out of the app. Here's how:
 
 ```javascript
 <script>
