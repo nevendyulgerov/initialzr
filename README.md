@@ -98,6 +98,8 @@ Keep in mind that the only REQUIRED param for initializing an initialzr app is n
 You might be wondering, will the options data become publicly available. Will you be able to access or modify it from photoGallery.options for example? 
 
 The answer is no. Initialzr creates "safe" applications, which mostly have read-only fields. These fields can be retrieved via the plugin's API in a safe way. This ensures that your app stays resilient throughout its life. It also ensures that issues, caused by script injections or other obtrusive attempts will fail. Having the peace of mind that your application is protected from uncaring hands was one of the main reasons for building Initialzr in the first place.
+
+# API
  
 Once your app is initialized, it will have access to the following methods:
 
