@@ -4,19 +4,17 @@
 
 (function() {
     initialzr = function(config) {
-        if ( typeof config !== "object" ) {
-            console.warn("Invalid initialization for plugin [initialzr]. Make sure to provide a valid config object on initialization.");
+        if ( typeof config !== "object" || typeof config.name !== "string" ) {
+            console.warn("Invalid initialization for construct [initialzr]. Make sure to provide a valid config object on initialization, containing at least a property 'name' {string}.");
             return false;
         }
 
         var app = {
             config: config,
-            nodes: {
-                helpers: {},
-                modules: {},
-                components: {}
-            }
+            nodes: {}
         };
+
+        var isGlobal = typeof config.isGlobal === "boolean" ? config.isGlobal : true;
 
         var init = function() {
             var addNode = function(nodeFamily, nodeName, func) {
@@ -59,15 +57,11 @@
                 }
             };
 
-            var getNodeItems = function(nodeFamily) {
+            var getNodes = function(nodeFamily) {
                 var nodes = app.nodes;
-                var items = [];
 
                 if ( nodes.hasOwnProperty(nodeFamily) ) {
-                    for ( var i in nodes[nodeFamily] ) {
-                        items.push(i);
-                    }
-                    return items;
+                    return nodes[nodeFamily];
                 } else {
                     return false;
                 }
@@ -77,61 +71,39 @@
                 return typeof getNode(nodeFamily, nodeName) === "function";
             };
 
-            var getData = function(prop, name) {
-                var data = app.config;
+            var getConfig = function(name) {
+                var config = app.config;
 
-                if ( data.hasOwnProperty(prop) && data[prop].hasOwnProperty(name) ) {
-                    return data[prop][name];
+                if ( config.hasOwnProperty(name) ) {
+                    return config[name];
                 } else {
                     return false;
                 }
             };
 
-            var addHelper = function(nodeName, func) {
-                addNode("helpers", nodeName, func);
+            var createInstance = function() {
+                return {
+                    addNode: addNode,
+                    callNode: callNode,
+                    getNode: getNode,
+                    nodeExists: nodeExists,
+                    getNodes: getNodes,
+                    getConfig: getConfig,
+                    augment: augment
+                };
             };
 
-            var addComponent = function(nodeName, func) {
-                addNode("components", nodeName, func);
-            };
-
-            var addModule = function(nodeName, func) {
-                addNode("modules", nodeName, func);
-            };
-
-            var getHelper = function(nodeName) {
-                return getNode("helpers", nodeName);
-            };
-
-            var getComponent = function(nodeName) {
-                return getNode("components", nodeName);
-            };
-
-            var getModule = function(nodeName) {
-                return getNode("modules", nodeName);
-            };
-
-            var setGlobal = (function() {
-                window[app.config.name] = (function() {
-                    return {
-                        addHelper: addHelper,
-                        getHelper: getHelper,
-                        addComponent: addComponent,
-                        getComponent: getComponent,
-                        addModule: addModule,
-                        getModule: getModule,
-                        addNode: addNode,
-                        callNode: callNode,
-                        getNodeItems: getNodeItems,
-                        getNode: getNode,
-                        nodeExists: nodeExists,
-                        getData: getData,
-                        augment: augment
-                    };
-                })();
-            })();
+            return createInstance();
         };
 
-        init();
+        var setGlobal = function(instance) {
+            window[app.config.name] = instance;
+        };
+
+        if ( isGlobal ) {
+            setGlobal(init());
+        } else {
+            return init();
+        }
     };
 })();
