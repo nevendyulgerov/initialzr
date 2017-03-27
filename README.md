@@ -128,8 +128,9 @@ app.getNode(nodeFamily, nodeName);
 // calls node, from the node families of the application
 // @param string nodeFamily
 // @param string nodeName
+// @param mixed params
 // @return mixed
-add.callNode(nodeFamily, nodeName);
+add.callNode(nodeFamily, nodeName, params);
 
 // get all nodes from node family
 // @param string nodeFamily
