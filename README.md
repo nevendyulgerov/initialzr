@@ -69,7 +69,7 @@ You can use Initialzr like this:
 </script>
 ```
 
-The above code will initialize a new global application (object), with name "myApp". This app will become available from window[myApp] or directly from myApp (without var in front to ensure that you're getting a global variable.
+The above code will initialize a new global application (object), with name "myApp". This app will become available from window[myApp] or directly from myApp (without var in front to ensure that you're getting a global variable).
 
 Notice that you pass an object to Initialzr upon initialization. This is your application's config file. It can contain any information. For example, here's how we can initialize another app.
 
@@ -106,71 +106,44 @@ Once your app is initialized, it will have access to the following methods:
 
 var app = photoGallery;
 
-// creates a new node (function), in the node families of the application
-// @param string
-// @param string
-// @param function
+// creates a new node in a node family
+// @param string nodeFamily
+// @param string nodeName
+// @param function node
 // @return mixed
-app.addNode("nodeFamily", "nodeName", function);
+app.addNode(nodeFamily, nodeName, node);
+
+// retrieves a node from node family
+// @param string nodeFamily
+// @param string nodeName
+// @return mixed
+app.getNode(nodeFamily, nodeName);
 
 // calls node, from the node families of the application
-// @param string
-// @param string
+// @param string nodeFamily
+// @param string nodeName
 // @return mixed
-add.callNode("nodeFamily", "nodeName");
+add.callNode(nodeFamily, nodeName);
 
-// retrieves the names of all defined node items from node family "components"
-// @param string
-// @return array
-app.getNodeItems("nodeFamily");
+// get all nodes from node family
+// @param string nodeFamily
+// @return object
+app.getNodes(nodeFamily);
 
-// retrieves a node, from the node family "components"
-// @param string
-// @param string
-// @return mixed
-app.getNode("nodeFamily", "nodeName");
-
-// checkes if given node family exists
-// @param string
+// checks if node exists in node family
+// @param string nodeFamily
+// @param string nodeName
 // @return boolean
-app.nodeExists("components");
+app.nodeExists(nodeFamily, nodeName);
 
 // get data from the config space of the application
-// @param string
-// @param string
-app.getData("data", "name");
+// @param string name
+// @return mixed
+app.getConfig(name);
 
 // augment the application by adding a new node family
-// @param string
-// @param string
-app.augment("node", "name");
-
-// add a new helper node in the node family "helpers"
-// @param string
-// @param function
-app.addHelper("helperName", function);
-
-// add a new component node in the node family "components"
-// @param string
-// @param function
-app.addComponent("componentName", function);
-
-// add a new module node in the node family "modules"
-// @param string
-// @param function
-app.addModule("moduleName", function);
-
-// get helper node
-// @param string
-app.getHelper("helperName");
-
-// get module node
-// @param string
-app.getModule("moduleName");
-
-// get component node
-// @param string
-app.getComponent("componentName");
+// @param string nodeFamily
+app.augment(nodeFamily);
 
 </script>
 ```
@@ -182,25 +155,13 @@ As seen above, the only way to add functionality to your app is through the node
 
 var app = {
     config: {...},
-    nodes: {
-        helpers: {},
-        modules: {},
-        components: {}
-    }
+    nodes: {...}
 };
 
 </script>
 ```
 
-An initialzr app has 3 default node families - helpers, modules, components. Whether you'll use these spaces or define your own node families is up to you. The Node API supports creation of new node families through the augment() method.
-
-I personally use the default node families in the following way:
-
-- helpers: contain global helper methods, which need to be available to all nodes from other node families
-- modules: contain core functionality for managing the application
-- components: contain DOM-related functionality, which is tightly coupled with html templates
-
-Please note the sequence as it matters, especially if you are concatenating your javascripts using build tools like gulp or grunt.
+You config file goes into the "config" space of the app. Your nodes are defined and stored in the "nodes" space of the app.
 
 Now, let's play with some of the methods, which come with the Node API.
 
@@ -216,8 +177,11 @@ Let's create a new application.
     });
 })(initialzr);
 
-// create a helper node
-myApp.addHelper("myHelper", function(str) {
+// add a new node family "helpers" to the app
+myApp.augment("helpers");
+
+// add a node to node family "helpers"
+myApp.addNode("helpers", "myHelper", function(str) {
     console.log("helper methods [myHelper] says "+str);
 };
 
@@ -225,7 +189,7 @@ myApp.addHelper("myHelper", function(str) {
 jQuery(document).ready(function($) {
     
     // get helper myHelper
-    var myHelper = myApp.getHelper("myHelper");
+    var myHelper = myApp.getNode("helpers", "myHelper");
     
     // call helper functionality and pass argument{string} "hello!"
     myHelper("hello!");
@@ -234,13 +198,12 @@ jQuery(document).ready(function($) {
 </script>
 ```
 
-The above code creates a new application "myApp", then it adds to its "helpers" node family a helper method with name "myHelper" and client-provided functionality. So, basically you interact with initialzr in the following way:
+The above code creates a new application "myApp", augments the app with a new node family "helpers". Then it adds to this node family a helper method with name "myHelper" and client-provided functionality. So, basically you interact with initialzr in the following way:
 
 - save your functionality as node in initialzr
-- call your functionality through the plugin's API
+- call your functionality through the initialzr's API
 
-Please note that you do NOT have direct access to the app's properties, so if you try to do something funky like delete myApp.nodes or myApp.nodes = undefined, the operation will fail, returning a boolean literal. 
-
+Please note that you do NOT have direct access to the app's properties, so if you try to do something funky like delete myApp.nodes or myApp.nodes = undefined, the operation will fail, returning a boolean literal.
 
 Let's create another application.
 
@@ -254,8 +217,11 @@ Let's create another application.
     });
 })(initialzr);
 
-// create a helper node for controlling visibility
-myApp.addHelper("toggleVisibility", function($el, callback) {
+// add a node to node family "helpers"
+myApp.augment("helpers");
+
+// add a node to node family "helpers"
+myApp.addNode("helpers", "toggleVisibility", function($el, callback) {
     var style = $el[0].style;
     style.opacity = 0;
     style.transition = "all 0.3s";
@@ -263,8 +229,8 @@ myApp.addHelper("toggleVisibility", function($el, callback) {
     callback();
 };
 
-// create a helper node for controlling style updates
-myApp.addHelper("toggleStyle", function($el) {
+// add a node to node family "helpers"
+myApp.addNode("helpers", "toggleStyle", function($el) {
     var style = $el[0].style;
     style.backgroundColor = "tomato";
     style.color = "white";
@@ -276,8 +242,8 @@ jQuery(document).ready(function($) {
     var app = myApp;
     var $target = $('.target');
     
-    var toggleVisibility = app.getHelper("toggleVisibility");
-    var toggleStyle = app.getHelper("toggleStyle");
+    var toggleVisibility = app.getNode("helpers", "toggleVisibility");
+    var toggleStyle = app.getNode("helpers", "toggleStyle");
     
     toggleVisibility($target, function() {
         toggleStyle($target);
@@ -302,9 +268,9 @@ Let's make this a bit more interesting. Let's hook to https://ghibliapi.herokuap
 First, we need to break down the app into a ground of methods - nodes. I personally identify the following nodes:
 
 - ghibliService   - controls the AJAX requests to the https://ghibliapi.herokuapp.com/films
-- displayMovies   - controls the data retrieval method
-- randomGradient  - controls the randomization of gradients
+- iterateMovies   - controls the iteration over ghibli data
 - notifier        - controls the notification mechanism
+- randomGradient  - controls the randomization of gradients
 
 Once again, we start off by creating an application:
 
@@ -323,18 +289,29 @@ Once again, we start off by creating an application:
 
 There's nothing unusual here. We simply initialize the app.
 
+Next, we augment the app with a new node family:
+
+```javascript
+<script>
+
+// augment app with a node family "ghibli"
+myApp.augment("ghibli")
+
+</script>
+```
+
 Next, we create the node "ghibliService":
 
 ```javascript
 <script>
 
-// add helper for ajax operations
-myApp.addHelper("ghibliService", function(args) {
+// Node: ghibliService
+// retrieves data from an endpoint via AJAX
+myApp.addNode("ghibli", "ghibliService", function(args) {
     var callback = args.callback;
 
     $.ajax({
         type: "GET",
-        data: {},
         url: "https://ghibliapi.herokuapp.com/films",
         success: function(response) {
             callback(null, response);
@@ -350,19 +327,17 @@ myApp.addHelper("ghibliService", function(args) {
 
 This node contains an AJAX call through the jQuery method .ajax(). Notice, the incoming param "args" is an object, which must contain a callback.
 
-Next, we create node "displayMovies":
+Next, we create node "iterateMovies":
 
 ```javascript
 <script>
 
-// add helper for displaying movies
-myApp.addHelper("displayMovies", function(args) {
+// Node: iterateMovies
+// iterate movies, provided as a param
+myApp.addNode("ghibli", "iterateMovies", function(args) {
     var interval = args.interval;
     var movies   = args.movies;
-	var callback = args.callback;
-    var app      = myApp;
-    var notifier = app.getHelper("notifier");
-    var rGradient = app.getHelper("randomGradient");
+    var callback = args.callback;
 
     var display = function(index, movies) {
         index = index || 0;
@@ -371,25 +346,55 @@ myApp.addHelper("displayMovies", function(args) {
             return true;
         }
 
+        // get current movie
         var movie = movies[index];
-		
-		// execute client callback
-		callback(null, movie);
-        
-        // recursive call
+
+        // call client callback
+        callback(movie);
+
         setTimeout(function() {
+
+            // recursive call
             display(++index, movies);
         }, interval);
     };
 
-    // start recursive display
     display(0, movies);
 });
 	
 </script>
 ```
 
-This node is a bit more complicated. It contains an inner recursive function display. This function is called for each result. We need it to be recursive because this allows us to safely call the next result, only after the presentation of the previous has been fully executed. Also, notice that we retrieve two nodes - notifier and rGradient and delegate the presentation for each result to them.
+This node is a bit more complicated. It contains an inner recursive function display. This function is called for each result. We need it to be recursive because this allows us to safely call the next result, only after the presentation of the previous has been fully executed. Also, notice that we execute a callback with the retrieved data.
+
+Next, let's create the node, controlling DOM notifications:
+
+```javascript
+<script>
+
+// Node: notifier
+// outputs data to the DOM
+myApp.addNode("ghibli", "notifier", function(args) {
+    var type      = args.type;
+    var title     = args.title;
+    var subtitle  = args.subtitle;
+    var fade      = args.fade;
+    var hideAfter = args.hideAfter;
+    var $wrapper  = $('.notifications');
+    var notification = '<div class="notification bg '+type+'"><span class="title">'+title+'</span><span class="subtitle">'+subtitle+'</span></div>';
+
+    $wrapper.append(notification);
+    var $target = $('.notification').last().hide().fadeIn(fade);
+
+    setTimeout(function() {
+        $target.fadeOut(fade);
+    }, hideAfter);
+});
+
+</script>
+```
+
+This node contains a simple notification mechanism - it appends a div, containing a message to the DOM. Then it fades in the notification and after a timeout, it fades it out.
 
 Next, comes the randomGradient node:
 
@@ -424,34 +429,6 @@ myApp.addHelper("randomGradient", function($el) {
 
 This node applies a randomized gradient to a provided jQuery object. Let's not focus on how it gets the random gradient for now.
 
-Finally, let's create the node, controlling DOM notifications:
-
-```javascript
-<script>
-
-// add helper for DOM notifications
-myApp.addHelper("notifier", function(args) {
-    var type      = args.type;
-    var title     = args.title;
-    var subtitle  = args.subtitle;
-    var fade      = args.fade;
-    var hideAfter = args.hideAfter;
-    var $wrapper  = $('.notifications');
-    var notification = '<div class="notification bg '+type+'"><span class="title">'+title+'</span><span class="subtitle">'+subtitle+'</span></div>';
-
-    $wrapper.append(notification);
-    var $target = $('.notification').last().hide().fadeIn(fade);
-
-    setTimeout(function() {
-        $target.fadeOut(fade);
-    }, hideAfter);
-});
-
-</script>
-```
-
-This node contains a simple notification mechanism - it appends a div, containing a message to the DOM. Then it fades in the notification and after a timeout, it fades it out.
-
 To get these four nodes hooked, we need an entrypoint:
 
 ```javascript
@@ -460,34 +437,38 @@ To get these four nodes hooked, we need an entrypoint:
 // entrypoint
 jQuery(document).ready(function() {
     var app = myApp;
-    
-    var ghibliService = app.getHelper("ghibliService");
-    var displayMovies = app.getHelper("displayMovies");
-    var notifier      = app.getHelper("notifier");
-	var rGradient	  = app.getHelper("randomGradient");
+    var ghibliService = app.getNode("ghibli", "ghibliService");
+    var iterateMovies = app.getNode("ghibli", "iterateMovies");
+    var notifier      = app.getNode("ghibli", "notifier");
+    var rGradient     = app.getNode("ghibli", "randomGradient");
 
-	// 1. call ghibli service ...
+    // 1. hook to ghibli service ...
     ghibliService({
         callback: function(err, response) {
+
+            // ... if we got a response
             if ( response ) {
-                // 2. display movies ...
-                displayMovies({
+
+                // 2. iterate movies ...
+                iterateMovies({
                     interval: 1000,
                     movies: response,
                     callback: function(movie) {
-                
-                        // 3. call notifier ...
+
+                        // 3. notify for movie ...
                         notifier({
                             type: "success",
                             title: movie.title,
-                            subtitle: "Director: "+movie.director+", <br/>Producer: "+movie.producer,
+                            subtitle: "Release date: "+movie.release_date+"<br/>Director: "+movie.director+", <br/>Producer: "+movie.producer,
                             fade: 2000,
                             hideAfter: 10000
                         });
-    
-                        // 4. call gradient randomizer
-                        var $target = $('.notification').last();
-                        rGradient($target);
+
+                        // get newly added notification
+                        var $targetNotification = $('.notification').last();
+
+                        // 4. apply random gradient on target
+                        rGradient($targetNotification);
                     }
                 });
             }
@@ -500,7 +481,7 @@ jQuery(document).ready(function() {
 
 Our entrypoint is the safe jQuery "document ready" event. It is up to you how you build your entrypoint script. If you don't depend on jQuery, you can execute the above code, right after your node definitions.
 
-So, first we call ghibliService with a callback. ghibliService calls the endpoint, gets the ghibli data and executes the callback, passing it the data. Internally, the callback delegates responsibility to displayMovies. Internally, displayMovies calls node notifier and randomGradient.
+So, first we call ghibliService with a callback. ghibliService calls the endpoint, gets the ghibli data and executes the callback, passing it the data. Internally, the callback delegates responsibility to iterateMovies. iterateMovies iterates the movies data and on each movie calls calls node notifier and randomGradient through a callback.
 
 That's it. Your app is ready for testing.
 
@@ -511,6 +492,164 @@ python -m http.server
 ```
 
 You can then view the app on localhost:8000
+
+# Another app - Locations
+
+Let's create another app, this time something a bit more practical. Let's create an app which displays a google map with a form for adding markers to the map. The form will contains two fields - latitude and longitude of the marker. Upon submission, a new marker must be added to the map.
+
+I identify 3 nodes for this app:
+
+- createMap
+- addMarker
+- handleInput
+
+Let's first initialize our app:
+
+```javascript
+<script>
+
+// create application via shorthand syntax
+(function(i){ i({name:"locations"}); })(initialzr);
+
+</script>
+```
+
+We create our app, this time using the shorthand syntax.
+
+Next, we create node "createMap":
+
+```javascript
+<script>
+
+// Node: mapCreator
+// creates map
+locations.addNode("map", "createMap", function(args) {
+
+    var map = new google.maps.Map(document.getElementById(args.selector), {
+        zoom: args.zoom,
+        center: {
+            lat: args.lat,
+            lng: args.lng
+        }
+    });
+
+    return map;
+});
+
+</script>
+```
+
+This node creates a map and returns it.
+
+Next, we create node "addMarker":
+
+```javascript
+<script>
+
+// Node: addMarker
+// adds marker to a map
+locations.addNode("map", "addMarker", function(args) {
+
+    var marker = new google.maps.Marker({
+        position: new google.maps.LatLng(args.lat,args.lng)
+    });
+
+    marker.setMap(args.map);
+    return marker;
+});
+
+</script>
+```
+
+This node creates a marker, adds it to a map (provided as a parameter) and then it returns the marker;
+
+The last node we need to create is "handleInput":
+
+```javascript
+<script>
+
+// Node: handleInput
+// handlers user input
+locations.addNode("map", "handleInput", function(args) {
+
+    // intercept submit event
+    args.$submit.on("click", function(e) {
+
+        // stop the default submission of the form
+        e.preventDefault();
+
+        // gather data
+        var data = {
+            lat: parseFloat(args.$lat.val()),
+            lng: parseFloat(args.$lng.val())
+        };
+
+        // execute client callback with data
+        args.callback(data)
+    });
+});
+
+</script>
+```
+
+This node handles the retrieval of user data, inserted in the form.
+
+The last thing we need is an entrypoint for our app:
+
+```javascript
+<script>
+
+// entrypoint
+jQuery(document).ready(function($) {
+
+    // get map box from DOM
+    var $mapBox = $(".map-box");
+
+    // set coordinates for New York
+    var newYorkCoordinates = {
+        lat: 40.705311,
+        lng: -74.258188
+    };
+
+    // 1. create map
+    var map = locations.getNode("map", "createMap")({
+        selector: "map",
+        lat: newYorkCoordinates.lat,
+        lng: newYorkCoordinates.lng,
+        zoom: 3
+    });
+
+    // 2. intercept input
+    locations.callNode("map", "handleInput", {
+        $submit: $mapBox.find('.trigger.submit'),
+        $lat: $mapBox.find('.lat'),
+        $lng: $mapBox.find('.lng'),
+        callback: function(data) {
+
+            // 3. add marker to map
+            locations.getNode("map", "addMarker")({
+                map: map,
+                lat: data.lat,
+                lng: data.lng
+            });
+        }
+    });
+});
+
+</script>
+```
+
+In our entrypoint, we get the DOM wrapper of the map. Then we define an initial position for our map (New York looks like a good spot for this). After that we create our map through the node "createMap". Next, we call node "handleInput", which starts listening for submit events. Once the user submits data, this node intercepts it, processes it and returns it through a callback. In this callback we call node "addMarker" which uses the data returned by node "handleInput" to create and add a new marker to the map.
+
+That's it, this app is ready for testing and deployment.
+
+Please note that this repository contains this application as a demo project. To start it up run a http server in the repo's directory. For example, via python, run in the root of the project:
+
+```terminal
+python -m http.server
+```
+
+You can then view the app on localhost:8000\locations.html
 
 # Conventions
 
@@ -528,13 +667,16 @@ To stay light-weight, Initialzr follows few strict conventions:
     });
 })(initialzr);
 
+// add node family "extras"
+myApp.augment("extras");
+
 // add a helper node
-myApp.addHelper("sayHi", function(str) {
+myApp.addNode("extras", "sayHi", function(str) {
     console.log("Hey there, "+str); 
 });
 
 // retrieve a non existing helper
-var myHelper = myApp.getHelper("myHekdkasdERROR");
+var myHelper = myApp.getNode("extras", "myHekdkasdERROR");
 
 if ( ! myHelper ) {
     // intercept and handle the error
@@ -546,7 +688,7 @@ if ( ! myHelper ) {
 </script>
 ```
 
-So, if you attempt to retrieve a non-existing node, you'll get false. If you attempt to overwrite an existing node, you'll get false. If you try to retrieve the list of nodes for a non existing node family, you'll get false.
+So, if you attempt to retrieve a non-existing node, you'll get false. If you attempt to overwrite an existing node, you'll get false. If you try to retrieve the list of nodes for a non existing node family, you'll get false. If you try to pass a non-functional node, a value of different from "function" you'll get false.
 
 - Another thing to note. Initialzr does NOT like when you mess with defined nodes. Once you add a node, you can only read and execute it. You cannot overwrite it, nor delete it. Client coders must decide on their node schema early and never try to overwrite it. Rather than trying to overwrite an already defined node, just add a new one and call the new instead of the old. Here's how:
 
@@ -556,22 +698,25 @@ So, if you attempt to retrieve a non-existing node, you'll get false. If you att
 // shorthand initialzr app
 (function(i){i({name:"myApp"})})(initialzr);
 
-// define a helper node
-myApp.addHelper("hey", function(str) {
+// add node family "extras"
+myApp.augment("extras");
+
+// define a node to node family "extras"
+myApp.addNode("extras", "hey", function(str) {
     console.log("Hey, "+str);
 });
 
-// you decide that you no longer like helper "hey"
+// you decide that you no longer like node "hey"
 // sorry, but you cannot delete it
 // Initialzr protects its nodes
 
 // well, ok then, I'll create a new node
-myApp.addHelper("anotherHey", function(str) {
+myApp.addNode("extras", "anotherHey", function(str) {
     console.log("How is it going, "+str+"?");
 });
 
 // call my new helper node
-myApp.getHelper("anotherHey")();
+myApp.getNode("extras", "anotherHey")("stranger");
 
 // that was easy
 
@@ -580,7 +725,9 @@ myApp.getHelper("anotherHey")();
 
 The above code demonstrates how to maintain flexibility in your app by including new nodes. You don't need and you cannot delete previously defined nodes.
 
-Besides adding new nodes to your app, you can also add entire node families. This comes in handy if you prefer to use your own node families, rather than the provided defaults - helpers, modules and components. Here's how to do it:
+# Node Families
+
+Node families are the heart of Initialzr. They provide separation of concept, when organizing your app's functionality. Through node families you can organize your application in a meaningful, logical way.
 
 ```javascript
 <script>
@@ -592,14 +739,17 @@ Besides adding new nodes to your app, you can also add entire node families. Thi
 myApp.augment("core");
 
 // add node to node family "core"
-myApp.addNode("core", "myNode", function(str) { console.log("my node receives "+str); });
+myApp.addNode("core", "loadDependencies", function(str) { console.log("my node receives "+str); });
 
 // call node "core" and execute it directly
-myApp.getNode("core", "myNode")();
+myApp.callNode("core", "loadDependencies", {
+    jquery: "url-to-jquery-script",
+    validation: "url-to-validation-script"
+});
 
 </script>
 ```
 
-Your app now has a new node family "core". You can store nodes via addNode method.
+Your app now has a new node family "core". This node family is concerned with the bootstrapping of your app. It contains a node "loadDependencies" which can internally loads all your dependencies in an async manner for example.
 
 You can now use Initialzr to create expressive node schemas which match your app requirements. These nodes will be safely stored and references via the Node API, exposed by Initialzr. All CRUD operations are performed in a memory-efficient manner so once a node is initialized and stored, you can quickly reference it globally, from any location.
