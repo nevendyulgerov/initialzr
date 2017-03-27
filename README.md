@@ -108,6 +108,10 @@ Once your app is initialized, it will have access to the following methods:
 
 var app = photoGallery;
 
+// augment the application by adding a new node family
+// @param string nodeFamily
+app.augment(nodeFamily);
+
 // creates a new node in a node family
 // @param string nodeFamily
 // @param string nodeName
@@ -142,10 +146,6 @@ app.nodeExists(nodeFamily, nodeName);
 // @param string name
 // @return mixed
 app.getConfig(name);
-
-// augment the application by adding a new node family
-// @param string nodeFamily
-app.augment(nodeFamily);
 
 </script>
 ```
