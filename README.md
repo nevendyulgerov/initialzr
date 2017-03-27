@@ -739,17 +739,42 @@ Node families are the heart of Initialzr. They provide separation of concept, wh
 myApp.augment("core");
 
 // add node to node family "core"
-myApp.addNode("core", "loadDependencies", function(str) { console.log("my node receives "+str); });
+myApp.addNode("core", "loadDependencies", function(args) {
+    var index = args.index || 0;
+    var dependencies = args.dependencies;
+    var callback = args.callback;
+
+    if ( index >= dependencies.length ) {
+        callback();
+        return true;
+    }
+
+    // get current movie
+    var dependency = dependencies[index];
+
+    // get dependency
+    $.getScript(dependency, function() {
+        myApp.callNode("core", "loadDependencies, {
+            index: ++index,
+            dependencies: dependencies
+        });
+    });
+});
 
 // call node "core" and execute it directly
 myApp.callNode("core", "loadDependencies", {
-    jquery: "url-to-jquery-script",
-    validation: "url-to-validation-script"
+    dependencies: [
+        "jquery-script-url",
+        "validation-script-url"
+    ],
+    callback: function() {
+        console.log("all dependencies loaded");
+    }
 });
 
 </script>
 ```
 
-Your app now has a new node family "core". This node family is concerned with the bootstrapping of your app. It contains a node "loadDependencies" which can internally loads all your dependencies in an async manner for example.
+Your app now has a new node family "core". This node family is concerned with the bootstrapping of your app. It contains a node "loadDependencies" which internally loads all your dependencies in an async manner. This node also communicates with other nodes through a callback.
 
 You can now use Initialzr to create expressive node schemas which match your app requirements. These nodes will be safely stored and references via the Node API, exposed by Initialzr. All CRUD operations are performed in a memory-efficient manner so once a node is initialized and stored, you can quickly reference it globally, from any location.
