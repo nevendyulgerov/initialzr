@@ -779,4 +779,4 @@ myApp.callNode("core", "loadDependencies", {
 
 Your app now has a new node family "core". This node family is concerned with the bootstrapping of your app. It contains a node "loadDependencies" which internally loads all your dependencies in an async manner. This node also communicates with other nodes through a callback.
 
-You can now use Initialzr to create expressive node schemas which match your app requirements. These nodes will be safely stored and references via the Node API, exposed by Initialzr. All CRUD operations are performed in a memory-efficient manner so once a node is initialized and stored, you can quickly reference it globally, from any location.
+You can now use Initialzr to create expressive node schemas which match your app requirements. These nodes will be safely stored and references via the Node API, exposed by Initialzr. All create and read operations are performed in a memory-efficient manner so once a node is initialized and stored, you can quickly reference it globally, from any location.
