@@ -404,7 +404,7 @@ Next, comes the randomGradient node:
 <script>
 
 // add helper for random gradients
-myApp.addHelper("randomGradient", function($el) {
+myApp.addNode("ghibli", "randomGradient", function($el) {
     var randomGradient = function() {
         var c1 = {
             r: Math.floor(Math.random()*255),
