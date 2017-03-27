@@ -499,9 +499,9 @@ Let's create another app, this time something a bit more practical. Let's create
 
 I identify 3 nodes for this app:
 
-- createMap
-- addMarker
-- handleInput
+- createMap - controls the creation of the map
+- addMarker - controls the adding of marker
+- handleInput - handlers user input
 
 Let's first initialize our app:
 
