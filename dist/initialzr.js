@@ -1,40 +1,73 @@
+(function(base) {
+    "use strict";
 
-// Plugin: Initialzr
-// Creates applications
+    /**
+     * Initialzr JavaScript Library
+     * v1.1.0
+     *
+     * Provides app constructs on local and global level
+     * Author: Neven Dyulgerov
+     * Released under the MIT license
+     */
 
-(function() {
-    initialzr = function(config) {
-        if ( typeof config !== "object" || typeof config.name !== "string" ) {
-            console.warn("Invalid initialization for construct [initialzr]. Make sure to provide a valid config object on initialization, containing at least a property 'name' {string}.");
-            return false;
+    base.initialzr = function(config) {
+        var hasConfig = false;
+        var isGlobal = false;
+
+        if ( typeof config === "object" && config !== null ) {
+            hasConfig = true;
+        }
+
+        if ( hasConfig && typeof config.global === "boolean" ) {
+            isGlobal = config.global;
+        }
+
+        if ( isGlobal && !hasConfig || isGlobal && hasConfig && !config.name ) {
+            return new Error("[Initialzr] Invalid initialization. Global applications require a name. Pass a name as part of the app's config.");
         }
 
         var app = {
-            config: config,
+            config: config || {},
             nodes: {}
         };
 
-        var isGlobal = typeof config.isGlobal === "boolean" ? config.isGlobal : true;
+        var schemas = {
+            "default": ["events", "renderers", "actions"],
+            "app": ["events", "actions", "common", "modules", "core"]
+        };
 
-        var init = function() {
+        var factory = function() {
             var augment = function(nodeFamily) {
                 var nodes = app.nodes;
+                var families = !Array.isArray(nodeFamily) ? [""+nodeFamily] : nodeFamily;
+                families.map(function (nf) {
+                    if ( ! nodes.hasOwnProperty(nf) ) {
+                        nodes[nf] = {};
+                    }
+                });
+                return this;
+            };
 
-                if ( ! nodes.hasOwnProperty(nodeFamily) ) {
-                    nodes[nodeFamily] = {};
-                } else {
-                    return false;
+            var addSchema = function(schemaName, schema) {
+                if ( ! schemas.hasOwnProperty(schemaName) && Array.isArray(schema) ) {
+                    schemas[schemaName] = schema;
                 }
+                return this;
+            };
+
+            var schema = function(schema) {
+                if ( schemas.hasOwnProperty(schema) ) {
+                    augment(schemas[schema]);
+                }
+                return this;
             };
 
             var addNode = function(nodeFamily, nodeName, func) {
                 var nodes = app.nodes;
-
                 if ( nodes.hasOwnProperty(nodeFamily) && ! nodes[nodeFamily].hasOwnProperty(nodeName) && typeof func === "function" ) {
                     nodes[nodeFamily][nodeName] = func;
-                } else {
-                    return false;
                 }
+                return this;
             };
 
             var getNode = function(nodeFamily, nodeName) {
@@ -49,22 +82,28 @@
             var callNode = function(nodeFamily, nodeName, params) {
                 var nodeParams = typeof params !== "undefined" ? params : {};
                 var node = getNode(nodeFamily, nodeName);
-
                 if ( node ) {
                     node(nodeParams);
-                } else {
-                    return false;
                 }
+                return this;
             };
 
             var getNodes = function(nodeFamily) {
-                var nodes = app.nodes;
+                return nodeFamily && app.nodes.hasOwnProperty(nodeFamily) ? app.nodes[nodeFamily] : app.nodes;
+            };
 
+            var configure = function(nodeFamily) {
+                var nodes = app.nodes;
                 if ( nodes.hasOwnProperty(nodeFamily) ) {
-                    return nodes[nodeFamily];
-                } else {
-                    return false;
+                    return {
+                        node: function(nodeName, func) {
+                            addNode(nodeFamily, nodeName, func);
+                            return this;
+                        },
+                        configure: configure
+                    };
                 }
+                return false;
             };
 
             var nodeExists = function(nodeFamily, nodeName) {
@@ -73,7 +112,6 @@
 
             var getConfig = function(name) {
                 var config = app.config;
-
                 if ( config.hasOwnProperty(name) ) {
                     return config[name];
                 } else {
@@ -83,7 +121,10 @@
 
             var createInstance = function() {
                 return {
+                    schema: schema,
+                    addSchema: addSchema,
                     augment: augment,
+                    configure: configure,
                     addNode: addNode,
                     getNode: getNode,
                     callNode: callNode,
@@ -97,13 +138,13 @@
         };
 
         var setGlobal = function(instance) {
-            window[app.config.name] = instance;
+            base[app.config.name] = base[app.config.name] || instance;
         };
 
         if ( isGlobal ) {
-            setGlobal(init());
+            setGlobal(factory());
         } else {
-            return init();
+            return factory();
         }
     };
-})();
+})(window);

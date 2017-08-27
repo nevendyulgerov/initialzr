@@ -164,7 +164,7 @@ var app = {
 </script>
 ```
 
-You config file goes into the "config" space of the app. Your nodes are defined and stored in the "nodes" space of the app.
+Your config file goes into the "config" space of the app. Your nodes are defined and stored in the "nodes" space of the app.
 
 Now, let's play with some of the methods, which come with the Node API.
 
